@@ -1,6 +1,7 @@
 require 'open3'
 
 module Backupsss
+  # The Tar class is used for creating a tar archive.
   class Tar
     attr_reader :src, :dest
 
@@ -25,6 +26,7 @@ module Backupsss
     end
 
     private
+
     def dest_dir
       File.dirname(dest)
     end
@@ -42,7 +44,7 @@ module Backupsss
     end
 
     def raise_sys_err(dir, err)
-      raise SystemCallError.new("#{dir}", err)
+      raise SystemCallError.new(dir.to_s, err)
     end
   end
 end

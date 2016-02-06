@@ -1,4 +1,4 @@
-require "backupsss/version"
+require 'backupsss/version'
 
 # Authentication
 # from ENV vars, file (~/.aws/credentials) or instance profile  handled by sdk
@@ -31,6 +31,7 @@ require "backupsss/version"
 #   end
 # end
 
+# A utility for backing things up to S3.
 module Backupsss
   # Your code goes here...
 end
