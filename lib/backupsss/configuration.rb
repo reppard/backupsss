@@ -1,4 +1,6 @@
 module Backupsss
+  # A class for managing the properties need for creating, uploading, and
+  # cleaning up backups in S3.
   class Configuration
     def self.keys
       [
