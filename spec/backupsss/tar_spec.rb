@@ -13,7 +13,7 @@ describe Backupsss::Tar do
 
     context 'when src does not exist on the file system' do
       before do
-        allow(File).to receive(:exist?).and_return(false)
+        allow(File).to receive(:exist?) { false }
       end
 
       it 'will raise Errno::ENOENT' do
@@ -27,8 +27,8 @@ describe Backupsss::Tar do
 
     context 'when src is not readable' do
       before do
-        allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:readable?).and_return(false)
+        allow(File).to receive(:exist?)    { true }
+        allow(File).to receive(:readable?) { false }
       end
 
       it 'will raise Errno::EPERM' do
@@ -42,8 +42,8 @@ describe Backupsss::Tar do
 
     context 'when src exists and is readable' do
       before do
-        allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:readable?).and_return(true)
+        allow(File).to receive(:exist?)    { true }
+        allow(File).to receive(:readable?) { true }
       end
 
       it 'will return true' do
@@ -63,7 +63,7 @@ describe Backupsss::Tar do
 
     context 'when dest dir does not exist on the file system' do
       before do
-        allow(File).to receive(:exist?).and_return(false)
+        allow(File).to receive(:exist?) { false }
       end
 
       it 'will raise Errno::ENOENT' do
@@ -78,8 +78,8 @@ describe Backupsss::Tar do
 
     context 'when dest dir is not writable' do
       before do
-        allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:writable?).and_return(false)
+        allow(File).to receive(:exist?)    { true }
+        allow(File).to receive(:writable?) { false }
       end
 
       it 'will raise Errno::EPERM' do
@@ -94,8 +94,8 @@ describe Backupsss::Tar do
 
     context 'when dest dir exists and is writable' do
       before do
-        allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:writable?).and_return(true)
+        allow(File).to receive(:exist?)    { true }
+        allow(File).to receive(:writable?) { true }
       end
 
       it 'will return true' do
@@ -135,9 +135,9 @@ describe Backupsss::Tar do
 
     context 'when src is not readable' do
       before do
-        allow(File).to receive(:readable?).and_return(false)
-        allow(File).to receive(:writable?).and_return(true)
-        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:readable?) { false }
+        allow(File).to receive(:writable?) { true }
+        allow(File).to receive(:exist?)    { true }
       end
 
       subject do
@@ -151,9 +151,9 @@ describe Backupsss::Tar do
 
     context 'when dest is not writable' do
       before do
-        allow(File).to receive(:writable?).and_return(false)
-        allow(File).to receive(:readable?).and_return(true)
-        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:writable?) { false }
+        allow(File).to receive(:readable?) { true }
+        allow(File).to receive(:exist?)    { true }
       end
 
       subject do
@@ -167,9 +167,9 @@ describe Backupsss::Tar do
 
     context 'when src or dest do not exist' do
       before do
-        allow(File).to receive(:writable?).and_return(true)
-        allow(File).to receive(:readable?).and_return(true)
-        allow(File).to receive(:exist?).and_return(false)
+        allow(File).to receive(:writable?) { true }
+        allow(File).to receive(:readable?) { true }
+        allow(File).to receive(:exist?)    { false }
       end
 
       subject do
