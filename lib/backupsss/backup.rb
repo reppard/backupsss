@@ -9,16 +9,27 @@ module Backupsss
       @tar    = tar
     end
 
-    def make_tar
-      @tar.make
+    def put_tar
+      file = make_tar
+      @client.put_object(bucket_opts.merge(body: file))
+      @client.wait_until(:object_exists, bucket_opts) do |w|
+        w.before_attempt { |n| puts "Checked S3 #{n} times" }
+
+        w.before_wait do |_, resp|
+          puts "Client got: #{resp}"
+          puts 'waiting before trying again'
+        end
+      end
     end
 
-    def put_tar
-      @client.put_object(
-        bucket: @config.s3_bucket,
-        key:    @config.s3_bucket_key,
-        body:   make_tar
-      )
+    private
+
+    def bucket_opts
+      { bucket: @config.s3_bucket, key: @config.s3_bucket_key }
+    end
+
+    def make_tar
+      @tar.make
     end
   end
 end
