@@ -36,6 +36,7 @@ describe Backupsss::Configuration do
         s3_bucket:       'a_bucket',
         s3_bucket_key:   'mah_bucket_key',
         backup_src_dir:  '/local/path',
+        backup_dest_dir: '/backup',
         backup_freq:     '0 * * * *',
         aws_region:      'us-east-1'
       )
@@ -54,6 +55,7 @@ describe Backupsss::Configuration do
         'S3_BUCKET'       => 'mah_bucket',
         'S3_BUCKET_KEY'   => 'mah_bucket_key',
         'BACKUP_SRC_DIR'  => '/local/path',
+        'BACKUP_DEST_DIR' => '/backup',
         'BACKUP_FREQ'     => '0 * * * *',
         'AWS_REGION'      => 'us-east-1'
       )
@@ -62,6 +64,7 @@ describe Backupsss::Configuration do
       expect(config.s3_bucket).to       eq('mah_bucket')
       expect(config.s3_bucket_key).to   eq('mah_bucket_key')
       expect(config.backup_src_dir).to  eq('/local/path')
+      expect(config.backup_dest_dir).to eq('/backup')
       expect(config.backup_freq).to     eq('0 * * * *')
       expect(config.aws_region).to      eq('us-east-1')
     end
