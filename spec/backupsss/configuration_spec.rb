@@ -2,30 +2,37 @@ require 'spec_helper'
 require 'backupsss/configuration'
 
 describe Backupsss::Configuration do
-  let(:configuration) { Backupsss::Configuration.new }
+  it 'can receive custom attributes' do
+    config = Backupsss::Configuration.new(
+      s3_bucket:      'a_bucket',
+      s3_bucket_key:  'mah_bucket_key',
+      backup_src_dir: '/local/path',
+      backup_freq:    '0 * * * *',
+      aws_region:     'us-east-1'
+    )
 
-  it 'has an s3_bucket attribute' do
-    configuration.s3_bucket = 'meh_bucket'
-    expect(configuration.s3_bucket).to eq('meh_bucket')
+    expect(config.s3_bucket).to      eq('a_bucket')
+    expect(config.s3_bucket_key).to  eq('mah_bucket_key')
+    expect(config.backup_src_dir).to eq('/local/path')
+    expect(config.backup_freq).to    eq('0 * * * *')
+    expect(config.aws_region).to     eq('us-east-1')
   end
 
-  it 'has an s3_bucket_key attribute' do
-    configuration.s3_bucket_key = 'meh_bucket_key'
-    expect(configuration.s3_bucket_key).to eq('meh_bucket_key')
-  end
+  it 'can set attributes with env vars' do
+    stub_const(
+      'ENV',
+      'S3_BUCKET'      => 'mah_bucket',
+      'S3_BUCKET_KEY'  => 'mah_bucket_key',
+      'BACKUP_SRC_DIR' => '/local/path',
+      'BACKUP_FREQ'    => '0 * * * *',
+      'AWS_REGION'     => 'us-east-1'
+    )
+    config = Backupsss::Configuration.new
 
-  it 'has a backup_src_dir attribute' do
-    configuration.backup_src_dir = '/path/to/data'
-    expect(configuration.backup_src_dir).to eq('/path/to/data')
-  end
-
-  it 'has an aws_region attribute' do
-    configuration.aws_region = 'us-east-1'
-    expect(configuration.aws_region).to eq('us-east-1')
-  end
-
-  it 'has a backup_frequency' do
-    configuration.backup_frequency = '3'
-    expect(configuration.backup_frequency).to eq('3')
+    expect(config.s3_bucket).to      eq('mah_bucket')
+    expect(config.s3_bucket_key).to  eq('mah_bucket_key')
+    expect(config.backup_src_dir).to eq('/local/path')
+    expect(config.backup_freq).to    eq('0 * * * *')
+    expect(config.aws_region).to     eq('us-east-1')
   end
 end
