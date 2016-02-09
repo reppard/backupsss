@@ -19,15 +19,13 @@ describe Backupsss::Configuration do
     expect(configuration.backup_src_dir).to eq('/path/to/data')
   end
 
-  it 'has an aws_region attribute with a default' do
+  it 'has an aws_region attribute' do
+    configuration.aws_region = 'us-east-1'
     expect(configuration.aws_region).to eq('us-east-1')
   end
 
   it 'has a backup_frequency' do
     configuration.backup_frequency = '3'
     expect(configuration.backup_frequency).to eq('3')
-  end
-
-  describe '#initialize' do
   end
 end

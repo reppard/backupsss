@@ -13,9 +13,5 @@ module Backupsss
     end
 
     attr_accessor(*keys)
-
-    def initialize
-      @aws_region = 'us-east-1'
-    end
   end
 end
