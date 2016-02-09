@@ -1,37 +1,36 @@
+require 'aws-sdk'
+require 'backupsss/tar'
+require 'rufus-scheduler'
+require 'backupsss/backup'
 require 'backupsss/version'
-
-# Authentication
-# from ENV vars, file (~/.aws/credentials) or instance profile  handled by sdk
-
-# S3_BUCKET
-# S3_BUCKET_KEY
-# BACKUP_SRC
-# BACKUP FREQUENCY
-# BACKUP RETENTION threshold
-# Remote file cleanup
-# Local file cleanup
-# Backupsss.new(:s3_bucket => 'foo', :s3_bucket_key => 'bar')
-# class Backupsss
-#   def initialize(args = {})
-#      @config = Configuration.new(args)
-#   end
-#
-#   def task
-#     // call out to tar
-#   end
-#
-#   def run
-#     scheduler.cron @config.backup_frequency do
-#       begin
-#         task
-#       rescue Exception => e
-#         $stdout.puts "IT SHIT THE h
-#       end
-#     end
-#   end
-# end
+require 'backupsss/configuration'
 
 # A utility for backing things up to S3.
 module Backupsss
-  # Your code goes here...
+  def self.run
+    @config = Backupsss::Configuration.new
+    @client = Aws::S3::Client.new(region: @config.aws_region)
+
+    start_scheduler
+  end
+
+  def self.call
+    @tar = Backupsss::Tar.new(
+      @config.backup_src_dir,
+      "#{@config.backup_dest_dir}/#{Time.now.to_i}.tar"
+    )
+    @backup = Backupsss::Backup.new(@config, @client, @tar)
+
+    puts 'Create and Upload Tar: Starting'
+    @backup.put_tar
+    puts 'Create and Upload Tar: Finished'
+  end
+
+  def self.start_scheduler
+    scheduler = Rufus::Scheduler.new
+    scheduler.cron @config.backup_freq do
+      call
+    end
+    scheduler.join
+  end
 end
