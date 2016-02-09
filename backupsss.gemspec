@@ -33,6 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-bundler', '~> 2.1'
   spec.add_development_dependency 'rubocop', '~> 0.37'
 
-  spec.add_runtime_dependency 'aws-sdk-core'
+  spec.add_runtime_dependency 'aws-sdk'
   spec.add_runtime_dependency 'rufus-scheduler'
 end
