@@ -7,7 +7,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 desc 'Run RuboCop on the lib directory'
 RuboCop::RakeTask.new(:rubocop) do |task|
-  task.patterns = ['lib/**/*.rb']
+  task.patterns = ['lib/**/*.rb', 'spec/**/*.rb']
   task.fail_on_error = true
 end
 
