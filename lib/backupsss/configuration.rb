@@ -16,8 +16,29 @@ module Backupsss
 
     def initialize(opts = {})
       attrs.each do |k, _|
-        instance_variable_set("@#{k}", attrs.merge(opts)[k])
+        attr_val = validate_attrs(attrs.merge(opts), k)
+        instance_variable_set("@#{k}", attr_val)
       end
+    end
+
+    private
+
+    def validate_attrs(attrs, attr_key)
+      throwout_nils(attrs).fetch(attr_key) do
+        raise ArgumentError, missing_attr_error_msg(attr_key)
+      end
+    end
+
+    def missing_attr_error_msg(key)
+      [
+        "Missing '#{key}'",
+        'Args should be passed in or set in the env:',
+        "#{key.upcase}=value backupsss"
+      ].join("\n")
+    end
+
+    def throwout_nils(attrs)
+      attrs.reject { |_, v| v.nil? }
     end
 
     def attrs
