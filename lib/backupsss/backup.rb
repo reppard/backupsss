@@ -3,10 +3,10 @@ module Backupsss
   class Backup
     attr_accessor :config, :client
 
-    def initialize(opts = {})
-      @config = opts[:config]
-      @client = opts[:client]
-      @tar    = opts[:tar]
+    def initialize(config, client, tar)
+      @config = config
+      @client = client
+      @tar    = tar
     end
 
     def make_tar
