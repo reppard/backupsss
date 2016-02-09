@@ -12,10 +12,13 @@ Gem::Specification.new do |spec|
     'jonathan.niesen@manheim.com'
   ]
 
-  spec.summary       = 'TODO: Write a short summary.'
-  spec.description   = 'TODO: Write a longer description or delete this line.'
-  spec.homepage      = 'TODO: Put your gem\'s website or public repo URL here.'
+  spec.homepage      = 'https://github.com/manheim/backupsss'
   spec.license       = 'MIT'
+  spec.summary       = 'Tar a thing and put it in S3'
+  spec.description   =  [
+    'Backup any file or directory as a tar and push the',
+    'tar to a specificed S3 bucket.'
+  ].join(" ")
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f|
     f.match(%r{^(test|spec|features)/})
