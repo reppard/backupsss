@@ -18,9 +18,9 @@ Gem::Specification.new do |spec|
   spec.description   =  [
     'Backup any file or directory as a tar and push the',
     'tar to a specificed S3 bucket.'
-  ].join(" ")
+  ].join(' ')
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f|
+  spec.files = `git ls-files -z`.split("\x0").reject { |f|
     f.match(%r{^(test|spec|features)/})
   }
   spec.bindir        = 'exe'
