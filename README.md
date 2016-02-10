@@ -32,8 +32,8 @@ Install it like:
 
 After checking out the repo, run `bundle install --path vendor/bundle` to
 install dependencies. Then, run `bundle exec rake spec` to run the tests.
-You can also run `bin/console` for an interactive prompt that will allow
-you to experiment.
+You can also run `bundle exec guard` for an interactive prompt that will allow
+you to experiment as well as run rspec and style checker when you save files.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 To release a new version, update the version number in `version.rb`, and then
