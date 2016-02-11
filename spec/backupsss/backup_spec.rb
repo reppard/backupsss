@@ -3,6 +3,7 @@ require 'backupsss/backup'
 
 describe Backupsss::Backup do
   let(:tar)    { instance_double('Backupsss::Tar', make: nil) }
+  let(:backup) { Backupsss::Backup.new(config, client, tar) }
   let(:client) do
     instance_double(
       'AWS::S3::Client',
@@ -10,12 +11,12 @@ describe Backupsss::Backup do
       wait_until: nil
     )
   end
-  let(:backup) { Backupsss::Backup.new(config, client, tar) }
   let(:config) do
     instance_double(
       'Backupsss::Configuration',
       s3_bucket:     's3://some_bucket',
-      s3_bucket_key: 'some_key')
+      s3_bucket_key: 'some_key'
+    )
   end
 
   describe '#put_tar' do
