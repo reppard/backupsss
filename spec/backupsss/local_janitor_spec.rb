@@ -6,7 +6,7 @@ describe Backupsss::LocalJanitor do
     FileUtils.mkdir(dir)
     ['a', 0, 1].each_with_index do |n, i|
       File.open("#{dir}/#{n}.tar", 'w') { |f| f.puts n }
-      FileUtils.touch("#{dir}/#{n}.tar", :mtime => Time.now + i)
+      FileUtils.touch("#{dir}/#{n}.tar", mtime: Time.now + i)
     end
   end
 
