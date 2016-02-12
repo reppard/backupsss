@@ -1,15 +1,21 @@
 module Backupsss
   # A class for cleaning up backup artifacts
   class LocalJanitor
-    attr_reader :dir
+    attr_reader :dir, :retention_count
 
-    def initialize(dir)
-      @dir = dir
+    def initialize(dir, retention_count = 0)
+      @dir             = dir
+      @retention_count = retention_count
     end
 
     def ls_garbage
-      garbage = Dir.entries(dir).reject { |f| (f == '..' || f == '.') }
-      puts garbage_message(filter_garbage)
+      garbage = sort_garbage(filter_garbage)
+
+      treasures = []
+      retention_count.times { treasures << "#{garbage.pop} (retaining)" }
+
+      puts garbage_message(treasures + garbage.reverse)
+
       garbage
     end
 
@@ -31,11 +37,17 @@ module Backupsss
       Dir.entries(dir).reject { |f| (f == '..' || f == '.') }
     end
 
+    def sort_garbage(garbage)
+      sorted_garbage = garbage.map         { |f| File.open("#{dir}/#{f}") }
+      sorted_garbage = sorted_garbage.sort { |a, b| a.mtime <=> b.mtime }
+      sorted_garbage.map                   { |f| f.to_path.split('/').last }
+    end
+
     def garbage_message(garbage)
       if garbage.empty?
         'No garbage found'
       else
-        ['Found garbage...', garbage.sort].flatten.join("\n")
+        ['Found garbage...', garbage].flatten.join("\n")
       end
     end
 

@@ -5,8 +5,9 @@ require 'backupsss/local_janitor'
 describe Backupsss::LocalJanitor do
   before(:example, mod_fs: true) do
     FileUtils.mkdir(dir)
-    2.times do |n|
+    ['a', 0, 1].each_with_index do |n, i|
       File.open("#{dir}/#{n}.tar", 'w') { |f| f.puts n }
+      FileUtils.touch("#{dir}/#{n}.tar", :mtime => Time.now + i)
     end
   end
 
@@ -22,24 +23,54 @@ describe Backupsss::LocalJanitor do
     it 'has dir attribute' do
       expect(subject.dir).to eq(dir)
     end
+
+    it 'has retention_count attribute with default of 0' do
+      expect(subject.retention_count).to eq(0)
+    end
   end
 
   describe '#ls_garbage' do
     context 'when there is garbage to cleanup' do
-      let(:message) do
-        [
-          'Found garbage...',
-          '0.tar',
-          '1.tar'
-        ].join("\n")
+      context 'when a retention count (n) is provided' do
+        let(:retention_count) { 1 }
+        subject { Backupsss::LocalJanitor.new(dir, retention_count) }
+
+        let(:message) do
+          [
+            'Found garbage...',
+            '1.tar (retaining)',
+            '0.tar',
+            'a.tar'
+          ].join("\n")
+        end
+
+        it 'returns the garbage array minus the oldest n backups',
+           mod_fs: true, ignore_stdout: true do
+          expect(subject.ls_garbage).to match_array(['0.tar', 'a.tar'])
+        end
+
+        it 'displays garbage message', mod_fs: true do
+          expect { subject.ls_garbage }.to output(message + "\n").to_stdout
+        end
       end
 
-      it 'returns garbage array', mod_fs: true, ignore_stdout: true do
-        expect(subject.ls_garbage).to match_array(['0.tar', '1.tar'])
-      end
+      context 'with default retention count' do
+        let(:message) do
+          [
+            'Found garbage...',
+            '1.tar',
+            '0.tar',
+            'a.tar'
+          ].join("\n")
+        end
 
-      it 'displays garbage message', mod_fs: true do
-        expect { subject.ls_garbage }.to output(message + "\n").to_stdout
+        it 'returns garbage array', mod_fs: true, ignore_stdout: true do
+          expect(subject.ls_garbage).to match_array(['0.tar', '1.tar', 'a.tar'])
+        end
+
+        it 'displays garbage message', mod_fs: true do
+          expect { subject.ls_garbage }.to output(message + "\n").to_stdout
+        end
       end
     end
 
