@@ -21,7 +21,7 @@ describe Backupsss::LocalJanitor do
 
   describe '#initialize' do
     it 'has dir attribute' do
-      expect(subject.dir).to eq(dir)
+      expect(subject.dir).to respond_to(:ls)
     end
 
     it 'has retention_count attribute with default of 0' do
@@ -29,7 +29,7 @@ describe Backupsss::LocalJanitor do
     end
   end
 
-  describe '#ls_garbage' do
+  describe '#sift_trash' do
     context 'when there is garbage to cleanup' do
       context 'when a retention count (n) is provided' do
         let(:retention_count) { 1 }
@@ -46,11 +46,11 @@ describe Backupsss::LocalJanitor do
 
         it 'returns the garbage array minus the oldest n backups',
            mod_fs: true, ignore_stdout: true do
-          expect(subject.ls_garbage).to match_array(['0.tar', 'a.tar'])
+          expect(subject.sift_trash).to match_array(['0.tar', 'a.tar'])
         end
 
         it 'displays garbage message', mod_fs: true do
-          expect { subject.ls_garbage }.to output(message + "\n").to_stdout
+          expect { subject.sift_trash }.to output(message + "\n").to_stdout
         end
       end
 
@@ -65,11 +65,11 @@ describe Backupsss::LocalJanitor do
         end
 
         it 'returns garbage array', mod_fs: true, ignore_stdout: true do
-          expect(subject.ls_garbage).to match_array(['0.tar', '1.tar', 'a.tar'])
+          expect(subject.sift_trash).to match_array(['0.tar', '1.tar', 'a.tar'])
         end
 
         it 'displays garbage message', mod_fs: true do
-          expect { subject.ls_garbage }.to output(message + "\n").to_stdout
+          expect { subject.sift_trash }.to output(message + "\n").to_stdout
         end
       end
     end
@@ -80,7 +80,7 @@ describe Backupsss::LocalJanitor do
       let(:message) { "No garbage found\n" }
 
       it 'displays no garbage message ' do
-        expect { subject.ls_garbage }.to output(message).to_stdout
+        expect { subject.sift_trash }.to output(message).to_stdout
       end
     end
   end

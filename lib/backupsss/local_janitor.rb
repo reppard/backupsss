@@ -1,54 +1,59 @@
+require 'backupsss/backup_dir'
+
 module Backupsss
   # A class for cleaning up backup artifacts
   class LocalJanitor
     attr_reader :dir, :retention_count
 
     def initialize(dir, retention_count = 0)
-      @dir             = dir
+      @dir             = Backupsss::BackupDir.new(dir)
       @retention_count = retention_count
     end
 
-    def ls_garbage
-      garbage = sort_garbage(filter_garbage)
+    def sift_trash
+      trash = find_trash
+      vocalize_progress(find_treasures, trash)
+      trash
+    end
 
-      treasures = []
-      retention_count.times { treasures << "#{garbage.pop} (retaining)" }
+    def find_treasures
+      dir.ls_rt.take(retention_count)
+    end
 
-      puts garbage_message(treasures + garbage.reverse)
-
-      garbage
+    def find_trash
+      dir.ls_rt.drop(retention_count)
     end
 
     def rm_garbage(file_array)
-      file_array.each { |f| burn_item(f) }
+      file_array.each { |f| throw_out(f) }
       display_finished
     end
 
     private
 
-    def burn_item(item)
-      FileUtils.rm(File.join(dir, item))
+    def throw_out(item)
+      FileUtils.rm(File.join(dir.to_s, item))
       display_cleanup(item)
     rescue SystemCallError => e
       display_error(e, item)
     end
 
-    def filter_garbage
-      Dir.entries(dir).reject { |f| (f == '..' || f == '.') }
-    end
-
-    def sort_garbage(garbage)
-      sorted_garbage = garbage.map         { |f| File.open("#{dir}/#{f}") }
-      sorted_garbage = sorted_garbage.sort { |a, b| a.mtime <=> b.mtime }
-      sorted_garbage.map                   { |f| f.to_path.split('/').last }
-    end
-
-    def garbage_message(garbage)
+    def vocalize_progress(treasure, garbage)
       if garbage.empty?
-        'No garbage found'
+        puts 'No garbage found'
       else
-        ['Found garbage...', garbage].flatten.join("\n")
+        puts 'Found garbage...'
+        tell_about(tag_treasure(treasure))
+        tell_about(garbage)
       end
+    end
+
+    def tell_about(array)
+      puts array
+    end
+
+    def tag_treasure(treasures)
+      treasures.collect { |treasure| "#{treasure} (retaining)" }
     end
 
     def display_finished
