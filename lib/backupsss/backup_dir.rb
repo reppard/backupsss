@@ -1,4 +1,5 @@
 module Backupsss
+  # A class for list and sorting files by mtime
   class BackupDir
     def initialize(dir)
       @dir = dir
