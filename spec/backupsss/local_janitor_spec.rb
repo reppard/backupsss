@@ -34,57 +34,54 @@ describe Backupsss::LocalJanitor do
   end
 
   describe '#sift_trash' do
-    context 'when there is garbage to cleanup' do
-      context 'when a retention count (n) is provided' do
+    context 'when there is no garbage to cleanup' do
+      let(:ls_rt) { [] }
+      let(:backup_dir) { double('Backupsss::BackupDir', ls_rt: ls_rt) }
+      let(:janitor) { Backupsss::LocalJanitor.new(dir) }
+      let(:message) { "No garbage found\n" }
+
+      subject { -> { janitor.sift_trash } }
+
+      before { allow(janitor).to receive(:dir) { backup_dir } }
+
+      it { is_expected.to output(message).to_stdout }
+    end
+
+    context 'when there is garbage to cleanup', ignore_stdout: true do
+      let(:ls_rt)      { ['1.tar', '0.tar', 'a.tar'] }
+      let(:backup_dir) { double('Backupsss::BackupDir', ls_rt: ls_rt) }
+
+      before { allow(janitor).to receive(:dir) { backup_dir } }
+
+      context 'and a retention count (n) is provided' do
         let(:retention_count) { 1 }
-        subject { Backupsss::LocalJanitor.new(dir, retention_count) }
+        let(:janitor) { Backupsss::LocalJanitor.new(dir, retention_count) }
 
-        let(:message) do
-          [
-            'Found garbage...',
-            '1.tar (retaining)',
-            '0.tar',
-            'a.tar'
-          ].join("\n")
-        end
+        subject { janitor.sift_trash }
 
-        it 'returns the garbage array minus the oldest n backups',
-           mod_fs: true, ignore_stdout: true do
-          expect(subject.sift_trash).to match_array(['0.tar', 'a.tar'])
-        end
+        it { is_expected.to match_array(['0.tar', 'a.tar']) }
 
-        it 'displays garbage message', mod_fs: true do
-          expect { subject.sift_trash }.to output(message + "\n").to_stdout
+        context 'stdout', ignore_stdout: false do
+          subject { -> { janitor.sift_trash } }
+
+          let(:message) { "Found garbage...\n1.tar (retaining)\n0.tar\na.tar" }
+
+          it { is_expected.to output(message + "\n").to_stdout }
         end
       end
 
       context 'with default retention count' do
-        let(:message) do
-          [
-            'Found garbage...',
-            '1.tar',
-            '0.tar',
-            'a.tar'
-          ].join("\n")
+        let(:janitor) { Backupsss::LocalJanitor.new(dir) }
+        subject { janitor.sift_trash }
+
+        it { is_expected.to match_array(['0.tar', '1.tar', 'a.tar']) }
+
+        context 'stdout', ignore_stdout: false do
+          subject { -> { janitor.sift_trash } }
+          let(:message) { "Found garbage...\n1.tar\n0.tar\na.tar" }
+
+          it { is_expected.to output(message + "\n").to_stdout }
         end
-
-        it 'returns garbage array', mod_fs: true, ignore_stdout: true do
-          expect(subject.sift_trash).to match_array(['0.tar', '1.tar', 'a.tar'])
-        end
-
-        it 'displays garbage message', mod_fs: true do
-          expect { subject.sift_trash }.to output(message + "\n").to_stdout
-        end
-      end
-    end
-
-    context 'when there is no garbage to cleanup' do
-      before        { FileUtils.mkdir(dir) }
-      after         { FileUtils.rm_rf(dir) }
-      let(:message) { "No garbage found\n" }
-
-      it 'displays no garbage message ' do
-        expect { subject.sift_trash }.to output(message).to_stdout
       end
     end
   end
