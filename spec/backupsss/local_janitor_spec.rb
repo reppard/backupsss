@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'pry'
 require 'backupsss/local_janitor'
 
 describe Backupsss::LocalJanitor do
