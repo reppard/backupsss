@@ -19,12 +19,17 @@ describe Backupsss::LocalJanitor do
   subject       { Backupsss::LocalJanitor.new(dir) }
 
   describe '#initialize' do
-    it 'has dir attribute' do
-      expect(subject.dir).to respond_to(:ls)
-    end
-
     it 'has retention_count attribute with default of 0' do
       expect(subject.retention_count).to eq(0)
+    end
+  end
+
+  # This test actually calls BackupDir
+  describe '#dir' do
+    subject { Backupsss::LocalJanitor.new(dir).dir }
+    context 'it returns an object' do
+      it { is_expected.to respond_to(:ls) }
+      it { is_expected.to respond_to(:ls_rt) }
     end
   end
 
