@@ -10,9 +10,7 @@ describe Backupsss::LocalJanitor do
     end
   end
 
-  after(:example, mod_fs: true) do
-    FileUtils.rm_rf(dir)
-  end
+  after(:example, mod_fs: true) { FileUtils.rm_rf(dir) }
 
   let(:dir)     { 'spec/fixtures/backups' }
   let(:garbage) { ['0.tar', '1.tar'] }
@@ -34,24 +32,21 @@ describe Backupsss::LocalJanitor do
   end
 
   describe '#sift_trash' do
+    let(:backup_dir) { double('Backupsss::BackupDir', ls_rt: ls_rt) }
+    before  { allow(janitor).to receive(:dir) { backup_dir } }
+
     context 'when there is no garbage to cleanup' do
       let(:ls_rt) { [] }
-      let(:backup_dir) { double('Backupsss::BackupDir', ls_rt: ls_rt) }
       let(:janitor) { Backupsss::LocalJanitor.new(dir) }
       let(:message) { "No garbage found\n" }
 
       subject { -> { janitor.sift_trash } }
 
-      before { allow(janitor).to receive(:dir) { backup_dir } }
-
       it { is_expected.to output(message).to_stdout }
     end
 
     context 'when there is garbage to cleanup', ignore_stdout: true do
-      let(:ls_rt)      { ['1.tar', '0.tar', 'a.tar'] }
-      let(:backup_dir) { double('Backupsss::BackupDir', ls_rt: ls_rt) }
-
-      before { allow(janitor).to receive(:dir) { backup_dir } }
+      let(:ls_rt) { ['1.tar', '0.tar', 'a.tar'] }
 
       context 'and a retention count (n) is provided' do
         let(:retention_count) { 1 }
@@ -63,7 +58,6 @@ describe Backupsss::LocalJanitor do
 
         context 'stdout', ignore_stdout: false do
           subject { -> { janitor.sift_trash } }
-
           let(:message) { "Found garbage...\n1.tar (retaining)\n0.tar\na.tar" }
 
           it { is_expected.to output(message + "\n").to_stdout }
