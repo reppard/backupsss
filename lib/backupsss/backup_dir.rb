@@ -20,5 +20,10 @@ module Backupsss
     def to_s
       @dir
     end
+
+    def rm(file)
+      FileUtils.rm(File.join(@dir, file))
+      ls
+    end
   end
 end

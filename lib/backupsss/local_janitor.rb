@@ -32,7 +32,7 @@ module Backupsss
     private
 
     def throw_out(item)
-      FileUtils.rm(File.join(dir.to_s, item))
+      dir.rm(item)
       display_cleanup(item)
     rescue SystemCallError => e
       display_error(e, item)

@@ -45,6 +45,30 @@ describe Backupsss::BackupDir do
     end
   end
 
+  describe '#rm' do
+    context 'when given a file that currently exists', mod_fs: true do
+      subject { Backupsss::BackupDir.new(dir).rm('a.tar') }
+
+      it { is_expected.not_to include('a.tar') }
+    end
+
+    context 'when given a non-existent file' do
+      subject { -> { Backupsss::BackupDir.new(dir).rm('fram.tar') } }
+
+      it { is_expected.to raise_error(Errno::ENOENT) }
+    end
+
+    context 'when given a file that is not modifiable' do
+      subject { -> { Backupsss::BackupDir.new(dir).rm('1.tar') } }
+      before do
+        allow(FileUtils).to receive(:rm).with(dir + '/1.tar')
+          .and_raise(Errno::EPERM)
+      end
+
+      it { is_expected.to raise_error(Errno::EPERM) }
+    end
+  end
+
   describe '#to_s' do
     subject { Backupsss::BackupDir.new(dir).to_s }
     it { is_expected.to eq(dir) }
