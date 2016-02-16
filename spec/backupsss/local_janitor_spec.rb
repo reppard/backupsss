@@ -84,7 +84,8 @@ describe Backupsss::LocalJanitor do
     context 'when provided garbage cannot be cleand up' do
       context 'because another process has already cleaned it up' do
         before do
-          allow(driver).to receive(:rm).with('2.tar').and_raise(Errno::ENOENT)
+          allow(driver).to receive(:rm).with('2.tar')
+            .and_raise(Backupsss::RemovalError, 'No such file or directory')
           allow(driver).to receive(:rm).with(['0.tar', '1.tar'])
         end
 
@@ -101,7 +102,8 @@ describe Backupsss::LocalJanitor do
 
         it 'reports which file could not be cleaned' do
           allow(driver).to receive(:rm).with('0.tar')
-          allow(driver).to receive(:rm).with('1.tar').and_raise(Errno::EPERM)
+          allow(driver).to receive(:rm).with('1.tar')
+            .and_raise(Backupsss::RemovalError, 'Operation not permitted')
 
           expect { subject.rm_garbage(garbage) }
             .to output(/#{message}/).to_stdout

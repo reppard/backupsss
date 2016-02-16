@@ -1,3 +1,5 @@
+require 'backupsss/removal_error'
+
 module Backupsss
   # A class for cleaning up backup artifacts
   class LocalJanitor
@@ -32,7 +34,7 @@ module Backupsss
     def throw_out(item)
       driver.rm(item)
       display_cleanup(item)
-    rescue SystemCallError => e
+    rescue Backupsss::RemovalError => e
       display_error(e, item)
     end
 
