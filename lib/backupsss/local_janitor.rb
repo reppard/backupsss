@@ -5,9 +5,9 @@ module Backupsss
   class LocalJanitor
     attr_reader :dir, :retention_count
 
-    def initialize(dir, retention_count = 0)
-      @dir             = Backupsss::BackupDir.new(dir)
-      @retention_count = retention_count
+    def initialize(opts)
+      @dir             = opts[:driver]
+      @retention_count = opts[:retention_count] || 0
     end
 
     def sift_trash
