@@ -1,3 +1,5 @@
+require 'backupsss/removal_error'
+
 module Backupsss
   # A class for listing and sorting files by mtime
   class BackupDir
@@ -24,6 +26,8 @@ module Backupsss
     def rm(file)
       FileUtils.rm(File.join(@dir, file))
       ls
+    rescue SystemCallError => e
+      raise RemovalError, e
     end
   end
 end

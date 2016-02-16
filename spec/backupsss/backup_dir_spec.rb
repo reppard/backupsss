@@ -55,7 +55,7 @@ describe Backupsss::BackupDir do
     context 'when given a non-existent file' do
       subject { -> { Backupsss::BackupDir.new(dir).rm('fram.tar') } }
 
-      it { is_expected.to raise_error(Errno::ENOENT) }
+      it { is_expected.to raise_error(Backupsss::RemovalError) }
     end
 
     context 'when given a file that is not modifiable' do
@@ -65,7 +65,7 @@ describe Backupsss::BackupDir do
           .and_raise(Errno::EPERM)
       end
 
-      it { is_expected.to raise_error(Errno::EPERM) }
+      it { is_expected.to raise_error(Backupsss::RemovalError) }
     end
   end
 
