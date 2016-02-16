@@ -1,12 +1,10 @@
-require 'backupsss/backup_dir'
-
 module Backupsss
   # A class for cleaning up backup artifacts
   class LocalJanitor
-    attr_reader :dir, :retention_count
+    attr_reader :driver, :retention_count
 
     def initialize(opts)
-      @dir             = opts[:driver]
+      @driver          = opts[:driver]
       @retention_count = opts[:retention_count] || 0
     end
 
@@ -17,11 +15,11 @@ module Backupsss
     end
 
     def find_treasures
-      dir.ls_rt.take(retention_count)
+      driver.ls_rt.take(retention_count)
     end
 
     def find_trash
-      dir.ls_rt.drop(retention_count)
+      driver.ls_rt.drop(retention_count)
     end
 
     def rm_garbage(file_array)
@@ -32,7 +30,7 @@ module Backupsss
     private
 
     def throw_out(item)
-      dir.rm(item)
+      driver.rm(item)
       display_cleanup(item)
     rescue SystemCallError => e
       display_error(e, item)

@@ -2,9 +2,8 @@ require 'spec_helper'
 require 'backupsss/local_janitor'
 
 describe Backupsss::LocalJanitor do
-  let(:dir)     { 'spec/fixtures/backups' }
   let(:garbage) { ['0.tar', '1.tar', '2.tar'] }
-  let(:driver)  { double('FsDriver', dir: dir) }
+  let(:driver)  { double('FsDriver') }
   let(:opts)    { { driver: driver } }
   let(:janitor) { Backupsss::LocalJanitor.new(opts) }
   subject       { janitor }
@@ -15,21 +14,7 @@ describe Backupsss::LocalJanitor do
     end
   end
 
-  # This test actually calls BackupDir
-  describe '#dir' do
-    before  { allow(driver).to receive(:ls) }
-    before  { allow(driver).to receive(:ls_rt) }
-    subject { janitor.dir }
-
-    context 'it returns an object' do
-      it { is_expected.to respond_to(:ls) }
-      it { is_expected.to respond_to(:ls_rt) }
-    end
-  end
-
   describe '#sift_trash' do
-    before { allow(janitor).to receive(:dir) { driver } }
-
     context 'when there is no garbage to cleanup' do
       before { allow(driver).to receive(:ls_rt) { [] } }
       let(:message) { "No garbage found\n" }
