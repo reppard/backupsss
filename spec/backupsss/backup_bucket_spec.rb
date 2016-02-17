@@ -8,7 +8,7 @@ describe Backupsss::BackupBucket do
       marker: '',
       contents: [
         {
-          key:           'mah_bucket/mah_key/1455049150.tar',
+          key:           'mah_bucket/mah/key/1455049150.tar',
           last_modified: Time.new('2016-02-09 20:52:03 UTC'),
           etag:          'somecrazyhashthinffffffffffsddf',
           size:          10_240,
@@ -19,7 +19,7 @@ describe Backupsss::BackupBucket do
           }
         },
         {
-          key:           'mah_bucket/mah_key/1455049148.tar',
+          key:           'mah_bucket/mah/key/1455049148.tar',
           last_modified: Time.new('2016-02-09 20:50:01 UTC'),
           etag:          'somecrazyhashthinglkjsdlfkjsdf',
           size:          10_240,
@@ -31,7 +31,7 @@ describe Backupsss::BackupBucket do
         }
       ],
       name:          'mah_bucket',
-      prefix:        'mah_key',
+      prefix:        'mah/key',
       max_keys:      1000,
       encoding_type: 'url'
     }
@@ -66,8 +66,8 @@ describe Backupsss::BackupBucket do
   describe '#ls' do
     it 'returns an array of s3 objects', stub_s3: true do
       expected_files = [
-        'mah_bucket/mah_key/1455049148.tar',
-        'mah_bucket/mah_key/1455049150.tar'
+        'mah_bucket/mah/key/1455049148.tar',
+        'mah_bucket/mah/key/1455049150.tar'
       ]
       expect(backup_bucket.ls).to match_array(expected_files)
     end
@@ -77,8 +77,8 @@ describe Backupsss::BackupBucket do
     it 'returns an array of s3 objects ordered newest to oldest',
        stub_s3: true do
       expected_files = [
-        'mah_bucket/mah_key/1455049150.tar',
-        'mah_bucket/mah_key/1455049148.tar'
+        'mah_bucket/mah/key/1455049150.tar',
+        'mah_bucket/mah/key/1455049148.tar'
       ]
       expect(backup_bucket.ls_t).to eq(expected_files)
     end
@@ -88,8 +88,8 @@ describe Backupsss::BackupBucket do
     it 'returns an array of s3 objects ordered oldest to newest',
        stub_s3: true do
       expected_files = [
-        'mah_bucket/mah_key/1455049148.tar',
-        'mah_bucket/mah_key/1455049150.tar'
+        'mah_bucket/mah/key/1455049148.tar',
+        'mah_bucket/mah/key/1455049150.tar'
       ]
 
       expect(backup_bucket.ls_rt).to eq(expected_files)
