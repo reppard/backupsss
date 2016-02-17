@@ -12,6 +12,10 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 RSpec.configure do |config|
   real_stdout = $stdout
 
+  config.mock_with :rspec do |mocks|
+    mocks.verify_doubled_constant_names = true
+  end
+
   config.before(:example, ignore_stdout: true) do
     $stdout = File.open(File::NULL, 'w')
   end
