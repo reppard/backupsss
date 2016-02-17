@@ -25,7 +25,7 @@ module Backupsss
 
     def rm(file)
       FileUtils.rm(File.join(@dir, file))
-      ls
+      file
     rescue SystemCallError => e
       raise RemovalError, e
     end

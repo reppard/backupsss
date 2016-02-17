@@ -49,7 +49,7 @@ describe Backupsss::BackupDir do
     context 'when given a file that currently exists', mod_fs: true do
       subject { Backupsss::BackupDir.new(dir).rm('a.tar') }
 
-      it { is_expected.not_to include('a.tar') }
+      it { is_expected.to eq('a.tar') }
     end
 
     context 'when given a non-existent file' do
