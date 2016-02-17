@@ -118,7 +118,4 @@ describe Backupsss::BackupBucket do
 
   describe '#rm' do
   end
-
-  describe '#to_s' do
-  end
 end
