@@ -18,8 +18,8 @@ module Backupsss
       dir.split('/').first
     end
 
-    def key
-      dir.split('/').drop(1).join
+    def prefix
+      dir.split('/').drop(1).join('/')
     end
 
     def ls
@@ -37,7 +37,7 @@ module Backupsss
     private
 
     def list_objects
-      s3_client.list_objects(bucket: bucket, prefix: key).contents
+      s3_client.list_objects(bucket: bucket, prefix: prefix).contents
     end
   end
 end

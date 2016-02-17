@@ -41,7 +41,7 @@ describe Backupsss::BackupBucket do
     s3.stub_responses(:list_objects, list_objects_response)
     s3
   end
-  let(:dir)           { 'mah_bucket/mah_key' }
+  let(:dir)           { 'mah_bucket/mah/key' }
   let(:region)        { 'us-east-1' }
   let(:backup_bucket) do
     Backupsss::BackupBucket.new(dir: dir, region: region)
@@ -78,9 +78,9 @@ describe Backupsss::BackupBucket do
     it      { is_expected.to eq('mah_bucket') }
   end
 
-  describe '#key' do
-    subject { backup_bucket.key }
-    it      { is_expected.to eq('mah_key') }
+  describe '#prefix' do
+    subject { backup_bucket.prefix }
+    it      { is_expected.to eq('mah/key') }
   end
 
   describe '#ls' do
