@@ -63,26 +63,6 @@ describe Backupsss::BackupBucket do
     end
   end
 
-  describe '#s3_client' do
-    let(:fake_client) { Class.new }
-    it 'should get a new s3 client' do
-      stub_const('Aws::S3::Client', fake_client)
-
-      expect(fake_client).to receive(:new).with(region: region)
-      backup_bucket.s3_client
-    end
-  end
-
-  describe '#bucket' do
-    subject { backup_bucket.bucket }
-    it      { is_expected.to eq('mah_bucket') }
-  end
-
-  describe '#prefix' do
-    subject { backup_bucket.prefix }
-    it      { is_expected.to eq('mah/key') }
-  end
-
   describe '#ls' do
     it 'returns an array of s3 objects', stub_s3: true do
       expected_files = [

@@ -10,18 +10,6 @@ module Backupsss
       @region = opts[:region]
     end
 
-    def s3_client
-      Aws::S3::Client.new(region: region)
-    end
-
-    def bucket
-      dir.split('/').first
-    end
-
-    def prefix
-      dir.split('/').drop(1).join('/')
-    end
-
     def ls
       list_objects.map(&:key)
     end
@@ -38,6 +26,18 @@ module Backupsss
 
     def list_objects
       s3_client.list_objects(bucket: bucket, prefix: prefix).contents
+    end
+
+    def s3_client
+      Aws::S3::Client.new(region: region)
+    end
+
+    def bucket
+      dir.split('/').first
+    end
+
+    def prefix
+      dir.split('/').drop(1).join('/')
     end
   end
 end
