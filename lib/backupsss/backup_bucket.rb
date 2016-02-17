@@ -27,7 +27,7 @@ module Backupsss
     end
 
     def ls_t
-      list_objects.sort_by { |o| o.last_modified }.map(&:key)
+      list_objects.sort_by(&:last_modified).map(&:key)
     end
 
     def ls_rt
