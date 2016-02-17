@@ -2,7 +2,11 @@ require 'spec_helper'
 require 'backupsss/backup'
 
 describe Backupsss::Backup do
-  let(:tar)    { instance_double('Backupsss::Tar', make: nil) }
+  let(:filename) { 'somekey.tar' }
+  let(:key)      { "some_prefix/#{filename}" }
+  let(:tar)      do
+    instance_double('Backupsss::Tar', make: nil, filename: filename)
+  end
   let(:backup) { Backupsss::Backup.new(config, client, tar) }
   let(:client) do
     instance_double(
@@ -15,7 +19,7 @@ describe Backupsss::Backup do
     instance_double(
       'Backupsss::Configuration',
       s3_bucket:     's3://some_bucket',
-      s3_bucket_key: 'some_key'
+      s3_bucket_key: 'some_prefix'
     )
   end
 
@@ -33,9 +37,9 @@ describe Backupsss::Backup do
       backup.put_tar
 
       expect(client).to have_received(:put_object)
-        .with(bucket: 's3://some_bucket', key: 'some_key', body: tar_file)
+        .with(bucket: 's3://some_bucket', key: key, body: tar_file)
       expect(client).to have_received(:wait_until)
-        .with(:object_exists, bucket: 's3://some_bucket', key: 'some_key')
+        .with(:object_exists, bucket: 's3://some_bucket', key: key)
     end
   end
 end

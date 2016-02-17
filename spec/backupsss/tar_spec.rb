@@ -2,9 +2,16 @@ require 'spec_helper'
 require 'backupsss/tar'
 
 describe Backupsss::Tar do
-  let(:src)  { 'spec/fixtures/backup_src' }
-  let(:dest) { 'spec/fixtures/backups/backup.tar' }
-  before     { allow(File).to receive(:exist?) { true } }
+  let(:src)      { 'spec/fixtures/backup_src' }
+  let(:filename) { 'backup.tar' }
+  let(:dest)     { "spec/fixtures/backups/#{filename}" }
+  before         { allow(File).to receive(:exist?) { true } }
+
+  describe '#filename' do
+    subject { Backupsss::Tar.new(src, dest).filename }
+
+    it { is_expected.to eq(filename) }
+  end
 
   describe '#valid_src?' do
     subject { -> { Backupsss::Tar.new(src, '').valid_src? } }

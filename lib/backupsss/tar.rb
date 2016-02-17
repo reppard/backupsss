@@ -25,6 +25,10 @@ module Backupsss
       dir_exists?(src) && src_readable?
     end
 
+    def filename
+      dest.split('/').last
+    end
+
     private
 
     def dest_dir
