@@ -22,6 +22,11 @@ module Backupsss
       ls_t.reverse
     end
 
+    def rm(file)
+      s3_client.delete_object(bucket: bucket, key: "#{prefix}/#{file}")
+      file
+    end
+
     private
 
     def list_objects

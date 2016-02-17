@@ -36,11 +36,22 @@ describe Backupsss::BackupBucket do
       encoding_type: 'url'
     }
   end
+
+  let(:delete_object_response) do
+    {
+      delete_marker: nil,
+      version_id: nil,
+      request_charged: nil
+    }
+  end
+
   let(:s3_stub) do
     s3 = Aws::S3::Client.new(stub_responses: true)
     s3.stub_responses(:list_objects, list_objects_response)
+    s3.stub_responses(:delete_object, delete_object_response)
     s3
   end
+
   let(:dir)           { 'mah_bucket/mah/key' }
   let(:region)        { 'us-east-1' }
   let(:backup_bucket) do
@@ -97,5 +108,16 @@ describe Backupsss::BackupBucket do
   end
 
   describe '#rm' do
+    it 'should call delete_object', stub_s3: true do
+      expect(s3_stub).to receive(:delete_object)
+        .with(bucket: 'mah_bucket', key: 'mah/key/1455049150.tar')
+
+      backup_bucket.rm('1455049150.tar')
+    end
+
+    context 'when the object is deleted succesfully', stub_s3: true do
+      subject { backup_bucket.rm('1455049150.tar') }
+      it { is_expected.to eq('1455049150.tar') }
+    end
   end
 end
