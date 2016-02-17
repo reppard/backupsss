@@ -19,10 +19,6 @@ module Backupsss
       ls_t.reverse
     end
 
-    def to_s
-      @dir
-    end
-
     def rm(file)
       FileUtils.rm(File.join(@dir, file))
       file

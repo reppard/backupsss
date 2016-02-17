@@ -68,9 +68,4 @@ describe Backupsss::BackupDir do
       it { is_expected.to raise_error(Backupsss::RemovalError) }
     end
   end
-
-  describe '#to_s' do
-    subject { Backupsss::BackupDir.new(dir).to_s }
-    it { is_expected.to eq(dir) }
-  end
 end
