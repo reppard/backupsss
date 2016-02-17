@@ -6,7 +6,7 @@ describe Backupsss::Backup do
   let(:backup) { Backupsss::Backup.new(config, client, tar) }
   let(:client) do
     instance_double(
-      'AWS::S3::Client',
+      'Aws::S3::Client',
       put_object: nil,
       wait_until: nil
     )
