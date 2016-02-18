@@ -14,9 +14,10 @@ describe Backupsss::BackupDir do
   after(:example, empty_dir: true)  { FileUtils.rm_rf(dir) }
   after(:example, mod_fs: true)     { FileUtils.rm_rf(dir) }
   let(:dir)                         { 'spec/fixtures/backups' }
+  let(:opts)                        { { dir: dir } }
 
   describe '#ls' do
-    subject { Backupsss::BackupDir.new(dir).ls }
+    subject { Backupsss::BackupDir.new(opts).ls }
     context 'when dir has contents', mod_fs: true do
       it { is_expected.to match_array(['0.tar', '1.tar', 'a.tar']) }
       it { is_expected.not_to include(['..', '.']) }
@@ -28,7 +29,7 @@ describe Backupsss::BackupDir do
   end
 
   describe '#ls_t' do
-    subject { Backupsss::BackupDir.new(dir).ls_t }
+    subject { Backupsss::BackupDir.new(opts).ls_t }
     context 'when dir has contents', mod_fs: true do
       it { is_expected.to eq(['a.tar', '0.tar', '1.tar']) }
     end
@@ -39,7 +40,7 @@ describe Backupsss::BackupDir do
   end
 
   describe '#ls_rt' do
-    subject { Backupsss::BackupDir.new(dir).ls_rt }
+    subject { Backupsss::BackupDir.new(opts).ls_rt }
     context 'returns filenames sorted oldest to newest', mod_fs: true do
       it { is_expected.to eq(['1.tar', '0.tar', 'a.tar']) }
     end
@@ -47,19 +48,19 @@ describe Backupsss::BackupDir do
 
   describe '#rm' do
     context 'when given a file that currently exists', mod_fs: true do
-      subject { Backupsss::BackupDir.new(dir).rm('a.tar') }
+      subject { Backupsss::BackupDir.new(opts).rm('a.tar') }
 
       it { is_expected.to eq('a.tar') }
     end
 
     context 'when given a non-existent file' do
-      subject { -> { Backupsss::BackupDir.new(dir).rm('fram.tar') } }
+      subject { -> { Backupsss::BackupDir.new(opts).rm('fram.tar') } }
 
       it { is_expected.to raise_error(Backupsss::RemovalError) }
     end
 
     context 'when given a file that is not modifiable' do
-      subject { -> { Backupsss::BackupDir.new(dir).rm('1.tar') } }
+      subject { -> { Backupsss::BackupDir.new(opts).rm('1.tar') } }
       before do
         allow(FileUtils).to receive(:rm).with(dir + '/1.tar')
           .and_raise(Errno::EPERM)

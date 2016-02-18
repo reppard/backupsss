@@ -3,8 +3,8 @@ require 'backupsss/removal_error'
 module Backupsss
   # A class for listing and sorting files by mtime
   class BackupDir
-    def initialize(dir)
-      @dir = dir
+    def initialize(opts = {})
+      @dir = opts[:dir]
     end
 
     def ls
