@@ -112,7 +112,7 @@ describe Backupsss::BackupBucket do
       expect(s3_stub).to receive(:delete_object)
         .with(bucket: 'mah_bucket', key: 'mah/key/1455049150.tar')
 
-      backup_bucket.rm('1455049150.tar')
+      backup_bucket.rm('mah/key/1455049150.tar')
     end
 
     context 'when the object is deleted succesfully', stub_s3: true do

@@ -23,7 +23,7 @@ module Backupsss
     end
 
     def rm(file)
-      s3_client.delete_object(bucket: bucket, key: "#{prefix}/#{file}")
+      s3_client.delete_object(bucket: bucket, key: file)
       file
     end
 
