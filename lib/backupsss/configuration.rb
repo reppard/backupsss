@@ -4,12 +4,12 @@ module Backupsss
   class Configuration
     def self.defaults
       {
-        s3_bucket:       ENV['S3_BUCKET'],
-        s3_bucket_key:   ENV['S3_BUCKET_KEY'],
-        backup_src_dir:  ENV['BACKUP_SRC_DIR'],
-        backup_dest_dir: ENV['BACKUP_DEST_DIR'],
-        backup_freq:     ENV['BACKUP_FREQ'],
-        aws_region:      ENV['AWS_REGION']
+        s3_bucket:        ENV['S3_BUCKET'],
+        s3_bucket_prefix: ENV['S3_BUCKET_PREFIX'],
+        backup_src_dir:   ENV['BACKUP_SRC_DIR'],
+        backup_dest_dir:  ENV['BACKUP_DEST_DIR'],
+        backup_freq:      ENV['BACKUP_FREQ'],
+        aws_region:       ENV['AWS_REGION']
       }
     end
 

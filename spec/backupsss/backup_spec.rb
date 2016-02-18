@@ -18,8 +18,8 @@ describe Backupsss::Backup do
   let(:config) do
     instance_double(
       'Backupsss::Configuration',
-      s3_bucket:     's3://some_bucket',
-      s3_bucket_key: 'some_prefix'
+      s3_bucket:        's3://some_bucket',
+      s3_bucket_prefix: 'some_prefix'
     )
   end
 

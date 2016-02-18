@@ -34,7 +34,7 @@ module Backupsss
     def bucket_opts
       {
         bucket: config.s3_bucket,
-        key: "#{config.s3_bucket_key}/#{tar.filename}"
+        key: "#{config.s3_bucket_prefix}/#{tar.filename}"
       }
     end
 
