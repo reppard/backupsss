@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'backupsss/local_janitor'
 
-describe Backupsss::LocalJanitor do
+describe Backupsss::Janitor do
   let(:garbage) { ['0.tar', '1.tar', '2.tar'] }
   let(:driver)  { double('FsDriver') }
   let(:opts)    { { driver: driver } }
-  let(:janitor) { Backupsss::LocalJanitor.new(opts) }
+  let(:janitor) { Backupsss::Janitor.new(opts) }
   subject       { janitor }
 
   describe '#initialize' do
@@ -31,7 +31,7 @@ describe Backupsss::LocalJanitor do
 
       context 'and a retention count (n) is provided' do
         let(:new_opts) { opts.merge(retention_count: 1) }
-        let(:janitor)  { Backupsss::LocalJanitor.new(new_opts) }
+        let(:janitor)  { Backupsss::Janitor.new(new_opts) }
 
         subject { janitor.sift_trash }
 

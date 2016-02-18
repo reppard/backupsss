@@ -2,7 +2,7 @@ require 'backupsss/removal_error'
 
 module Backupsss
   # A class for cleaning up backup artifacts
-  class LocalJanitor
+  class Janitor
     attr_reader :driver, :retention_count
 
     def initialize(opts)
