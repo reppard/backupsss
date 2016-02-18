@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'backupsss/local_janitor'
+require 'backupsss/janitor'
 
 describe Backupsss::Janitor do
   let(:garbage) { ['0.tar', '1.tar', '2.tar'] }
