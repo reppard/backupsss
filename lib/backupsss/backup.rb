@@ -37,9 +37,5 @@ module Backupsss
         key:    "#{config[:s3_bucket_prefix]}/#{filename}"
       }
     end
-
-    def make_tar
-      tar.make
-    end
   end
 end
