@@ -9,7 +9,8 @@ module Backupsss
         backup_src_dir:   ENV['BACKUP_SRC_DIR'],
         backup_dest_dir:  ENV['BACKUP_DEST_DIR'],
         backup_freq:      ENV['BACKUP_FREQ'],
-        aws_region:       ENV['AWS_REGION']
+        aws_region:       ENV['AWS_REGION'],
+        remote_retention: ENV['REMOTE_RETENTION'].to_i
       }
     end
 

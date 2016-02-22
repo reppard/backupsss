@@ -38,7 +38,8 @@ describe Backupsss::Configuration do
         backup_src_dir:   '/local/path',
         backup_dest_dir:  '/backup',
         backup_freq:      '0 * * * *',
-        aws_region:       'us-east-1'
+        aws_region:       'us-east-1',
+        remote_retention: 2
       )
 
       expect(config.s3_bucket).to        eq('a_bucket')
@@ -47,6 +48,7 @@ describe Backupsss::Configuration do
       expect(config.backup_dest_dir).to  eq('/backup')
       expect(config.backup_freq).to      eq('0 * * * *')
       expect(config.aws_region).to       eq('us-east-1')
+      expect(config.remote_retention).to eq(2)
     end
 
     it 'can set attributes with env vars' do
@@ -57,7 +59,8 @@ describe Backupsss::Configuration do
         'BACKUP_SRC_DIR'   => '/local/path',
         'BACKUP_DEST_DIR'  => '/backup',
         'BACKUP_FREQ'      => '0 * * * *',
-        'AWS_REGION'       => 'us-east-1'
+        'AWS_REGION'       => 'us-east-1',
+        'REMOTE_RETENTION' => '2'
       )
       config = Backupsss::Configuration.new
 
@@ -67,6 +70,7 @@ describe Backupsss::Configuration do
       expect(config.backup_dest_dir).to  eq('/backup')
       expect(config.backup_freq).to      eq('0 * * * *')
       expect(config.aws_region).to       eq('us-east-1')
+      expect(config.remote_retention).to eq(2)
     end
   end
 end
