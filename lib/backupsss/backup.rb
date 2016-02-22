@@ -1,16 +1,16 @@
 module Backupsss
   # A class for delivering a tar to S3
   class Backup
-    attr_reader :config, :client, :tar
+    attr_reader :config, :client, :filename
 
-    def initialize(config, client, tar)
-      @config = config
-      @client = client
-      @tar    = tar
+    def initialize(config, client)
+      @config       = config
+      @client       = client
+      @filename = config[:filename]
     end
 
-    def put_tar
-      client.put_object(bucket_opts.merge(body: make_tar))
+    def put_file(file)
+      client.put_object(bucket_opts.merge(body: file))
       wait_for_object
     end
 
@@ -33,8 +33,8 @@ module Backupsss
 
     def bucket_opts
       {
-        bucket: config.s3_bucket,
-        key: "#{config.s3_bucket_prefix}/#{tar.filename}"
+        bucket: config[:s3_bucket],
+        key:    "#{config[:s3_bucket_prefix]}/#{filename}"
       }
     end
 
