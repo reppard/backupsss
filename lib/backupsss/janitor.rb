@@ -16,6 +16,13 @@ module Backupsss
       trash
     end
 
+    def rm_garbage(file_array)
+      file_array.each { |f| throw_out(f) }
+      display_finished
+    end
+
+    private
+
     def find_treasures
       driver.ls_rt.take(retention_count)
     end
@@ -23,13 +30,6 @@ module Backupsss
     def find_trash
       driver.ls_rt.drop(retention_count)
     end
-
-    def rm_garbage(file_array)
-      file_array.each { |f| throw_out(f) }
-      display_finished
-    end
-
-    private
 
     def throw_out(item)
       driver.rm(item)
