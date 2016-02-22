@@ -1,36 +1,74 @@
 require 'aws-sdk'
-require 'backupsss/tar'
 require 'rufus-scheduler'
+require 'backupsss/tar'
 require 'backupsss/backup'
+require 'backupsss/backup_dir'
+require 'backupsss/backup_bucket'
+require 'backupsss/janitor'
 require 'backupsss/version'
 require 'backupsss/configuration'
 
 # A utility for backing things up to S3.
 module Backupsss
-  def self.run
-    @config = Backupsss::Configuration.new
-    @client = Aws::S3::Client.new(region: @config.aws_region)
-
-    start_scheduler
-  end
-
-  def self.call
-    @tar = Backupsss::Tar.new(
-      @config.backup_src_dir,
-      "#{@config.backup_dest_dir}/#{Time.now.to_i}.tar"
-    )
-    @backup = Backupsss::Backup.new(@config, @client, @tar)
-
-    puts 'Create and Upload Tar: Starting'
-    @backup.put_tar
-    puts 'Create and Upload Tar: Finished'
-  end
-
-  def self.start_scheduler
-    scheduler = Rufus::Scheduler.new
-    scheduler.cron @config.backup_freq do
-      call
+  class << self
+    def config
+      @config ||= Backupsss::Configuration.new
     end
-    scheduler.join
+
+    def call
+      push_backup(*prep_for_backup)
+      cleanup_local
+      cleanup_remote
+    end
+
+    def prep_for_backup
+      filename = "#{Time.now.to_i}.tar"
+      backup   = Backupsss::Backup.new(
+        {
+          s3_bucket_prefix: config.s3_bucket_prefix,
+          s3_bucket:        config.s3_bucket,
+          filename:         filename
+        }, Aws::S3::Client.new(region: config.aws_region)
+      )
+
+      [filename, backup]
+    end
+
+    def push_backup(filename, backup)
+      puts 'Create and Upload Tar: Starting'
+      backup.put_file(
+        Backupsss::Tar.new(
+          config.backup_src_dir,
+          "#{config.backup_dest_dir}/#{filename}"
+        ).make
+      )
+      puts 'Create and Upload Tar: Finished'
+    end
+
+    def cleanup_local
+      local_janitor = Janitor.new(
+        driver: BackupDir.new(dir: config.backup_dest_dir)
+      )
+      local_janitor.rm_garbage(local_janitor.sift_trash)
+    end
+
+    def cleanup_remote
+      remote_janitor = Janitor.new(
+        driver: BackupBucket.new(
+          dir: "#{config.s3_bucket}/#{config.s3_bucket_prefix}",
+          region: config.aws_region
+        ),
+        retention_count: config.remote_retention
+      )
+      remote_janitor.rm_garbage(remote_janitor.sift_trash)
+    end
+
+    def run
+      scheduler = Rufus::Scheduler.new
+      scheduler.cron config.backup_freq do
+        call
+      end
+      scheduler.join
+    end
   end
 end
