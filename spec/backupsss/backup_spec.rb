@@ -11,9 +11,9 @@ describe Backupsss::Backup do
       filename: filename
     }
   end
-  let(:backup)   { Backupsss::Backup.new(config_hash, client) }
-  let(:file) { instance_double('File') }
-  let(:client)   { double }
+  let(:backup) { Backupsss::Backup.new(config_hash, client) }
+  let(:file)   { instance_double('File') }
+  let(:client) { double }
 
   describe '#put_file' do
     it 'uploads the file to the s3 location defined by the config' do
