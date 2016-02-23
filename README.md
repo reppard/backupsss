@@ -1,5 +1,10 @@
 # Backupsss
 
+[![Gem Version](https://badge.fury.io/rb/capistrano-scm-jenkins.svg)](https://badge.fury.io/rb/capistrano-scm-jenkins)
+[![Circle CI](https://circleci.com/gh/manheim/backupsss.svg?style=svg)](https://circleci.com/gh/manheim/backupsss)
+[![Code Climate](https://codeclimate.com/github/manheim/backupsss/badges/gpa.svg)](https://codeclimate.com/github/manheim/backupsss)
+[![Test Coverage](https://codeclimate.com/github/manheim/backupsss/badges/coverage.svg)](https://codeclimate.com/github/manheim/backupsss/coverage)
+
 Tar a thing and put it in S3.
 
 Backup any file or directory as a tar and push the tar to a specificed
