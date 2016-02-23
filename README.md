@@ -24,7 +24,8 @@ Install it like:
     BACKUP_SRC_DIR=/path/to/data \
     BACKUP_DEST_DIR=/backups \
     BACKUP_FREQ="*/30 * * * *" \
-    AWS_REGION=us-east-1 backupsss
+    AWS_REGION=us-east-1 \
+    REMOTE_RETENTION=2 backupsss
 
 ```
 
