@@ -19,15 +19,11 @@ describe Backupsss::Backup do
     it 'uploads the file to the s3 location defined by the config' do
       allow(client).to receive(:put_object)
         .with(bucket: 's3://some_bucket', key: key, body: file)
-      allow(client).to receive(:wait_until)
-        .with(:object_exists, bucket: 's3://some_bucket', key: key)
 
       backup.put_file(file)
 
       expect(client).to have_received(:put_object)
         .with(bucket: 's3://some_bucket', key: key, body: file)
-      expect(client).to have_received(:wait_until)
-        .with(:object_exists, bucket: 's3://some_bucket', key: key)
     end
   end
 end
