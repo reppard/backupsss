@@ -65,7 +65,7 @@ module Backupsss
 
     def run
       scheduler = Rufus::Scheduler.new
-      scheduler.cron config.backup_freq do
+      scheduler.cron(config.backup_freq, blocking: true) do
         call
       end
       scheduler.join
