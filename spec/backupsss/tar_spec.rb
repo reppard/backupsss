@@ -65,15 +65,13 @@ describe Backupsss::Tar do
 
   describe '#tar_command' do
     context 'compress_archive true' do
-      subject { Backupsss::Tar.new('some/src', 'some/dest.tar').tar_command }
+      subject { Backupsss::Tar.new('src/', 'dest.tar').tar_command }
 
       it { is_expected.to eq('tar -zcvf') }
     end
 
     context 'compress_archive false' do
-      subject do
-        Backupsss::Tar.new('some/src', 'some/dest.tar', false).tar_command
-      end
+      subject { Backupsss::Tar.new('src/', 'dest.tar', false).tar_command }
 
       it { is_expected.to eq('tar -cvf') }
     end
