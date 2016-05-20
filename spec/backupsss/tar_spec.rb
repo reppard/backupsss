@@ -63,6 +63,22 @@ describe Backupsss::Tar do
     end
   end
 
+  describe '#tar_command' do
+    context 'compress_archive true' do
+      subject { Backupsss::Tar.new('some/src', 'some/dest.tar').tar_command }
+
+      it { is_expected.to eq('tar -zcvf') }
+    end
+
+    context 'compress_archive false' do
+      subject do
+        Backupsss::Tar.new('some/src', 'some/dest.tar', false).tar_command
+      end
+
+      it { is_expected.to eq('tar -cvf') }
+    end
+  end
+
   describe '#make' do
     subject { -> { Backupsss::Tar.new('some/src', 'some/dest.tar').make } }
 
@@ -92,34 +108,6 @@ describe Backupsss::Tar do
       subject { Backupsss::Tar.new(src, dest).make }
 
       it { is_expected.to be_a(File) }
-    end
-
-    context 'compress archieve' do
-      before do
-        allow(File).to receive(:writable?) { true }
-        allow(File).to receive(:readable?) { true }
-        allow(File).to receive(:open)      { true }
-        allow(Open3).to receive(:capture3).with('some/src', 'some/dest.tar')
-      end
-
-      subject { Backupsss::Tar.new('some/src', 'some/dest.tar') }
-
-      it 'should default to passing tar the z flag' do
-        expect(Open3).to receive(:capture3).with(
-          'tar -zcvf some/dest.tar some/src'
-        )
-
-        subject.make
-      end
-
-      it 'should not pass the z flag to tar when compress_archive is false' do
-        subject.compress_archive = false
-        expect(Open3).to receive(:capture3).with(
-          'tar -cvf some/dest.tar some/src'
-        )
-
-        subject.make
-      end
     end
   end
 end
