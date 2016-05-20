@@ -3,16 +3,17 @@ require 'open3'
 module Backupsss
   # The Tar class is used for creating a tar archive.
   class Tar
-    attr_reader :src, :dest
+    attr_reader :src, :dest, :compress_archive
 
-    def initialize(src, dest)
-      @src = src
-      @dest = dest
+    def initialize(src, dest, compress_archive = true)
+      @src              = src
+      @dest             = dest
+      @compress_archive = compress_archive
     end
 
     def make
       if valid_dest? && valid_src?
-        Open3.capture3("tar -cvf #{dest} #{src}")
+        Open3.capture3("#{tar_command} #{dest} #{src}")
         File.open(dest)
       end
     end
@@ -27,6 +28,10 @@ module Backupsss
 
     def filename
       dest.split('/').last
+    end
+
+    def tar_command
+      compress_archive ? 'tar -zcvf' : 'tar -cvf'
     end
 
     private
