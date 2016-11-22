@@ -43,7 +43,7 @@ describe Backupsss do
       allow(Rufus::Scheduler).to receive(:new).and_return(scheduler)
       allow(scheduler).to receive(:cron) { |&block| block.call }
       allow(scheduler).to receive(:join)
-      allow(subject).to receive(:call).and_raise(RuntimeError, "myerror")
+      allow(subject).to receive(:call).and_raise(RuntimeError, 'myerror')
       allow(STDERR).to receive(:puts)
 
       expect(Rufus::Scheduler).to receive(:new).once.ordered

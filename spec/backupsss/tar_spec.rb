@@ -164,8 +164,8 @@ describe Backupsss::Tar do
         expect(STDERR).to receive(:puts).once.ordered
           .with("tar command stderr:\nsome stderr")
         expect(File).to_not receive(:open)
-        expect { subject.make }.to raise_error(
-          RuntimeError, /ERROR: tarcmd exited 3/)
+        expect { subject.make }
+          .to raise_error(RuntimeError, /ERROR: tarcmd exited 3/)
       end
     end
     context 'when destination file does not exist' do
@@ -192,7 +192,8 @@ describe Backupsss::Tar do
         expect(File).to receive(:exist?).once.with(dest)
         expect(File).to_not receive(:open)
         expect { subject.make }.to raise_error(
-          RuntimeError, /ERROR: Tar destination file does not exist/)
+          RuntimeError, /ERROR: Tar destination file does not exist/
+        )
       end
     end
     context 'when destination file is 0 bytes' do
@@ -220,7 +221,8 @@ describe Backupsss::Tar do
         expect(File).to receive(:size).once.ordered.with(dest)
         expect(File).to_not receive(:open)
         expect { subject.make }.to raise_error(
-          RuntimeError, /ERROR: Tar destionation file is 0 bytes\./)
+          RuntimeError, /ERROR: Tar destionation file is 0 bytes\./
+        )
       end
     end
   end
