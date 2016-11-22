@@ -1,7 +1,7 @@
 machine:
   ruby:
     version:
-      2.2.3
+      2.2.5
 dependencies:
   pre:
     - gem install bundler --no-rdoc --no-ri -v 1.11.2
