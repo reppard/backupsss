@@ -66,7 +66,12 @@ module Backupsss
     def run
       scheduler = Rufus::Scheduler.new
       scheduler.cron(config.backup_freq, blocking: true) do
-        call
+        begin
+          call
+        rescue => exc
+          STDERR.puts "ERROR - backup failed: #{exc.message}"
+          STDERR.puts exc.backtrace.join("\n\t")
+        end
       end
       scheduler.join
     end
