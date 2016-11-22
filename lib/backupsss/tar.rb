@@ -13,7 +13,17 @@ module Backupsss
 
     def make
       if valid_dest? && valid_src?
-        Open3.capture3("#{tar_command} #{dest} #{src}")
+        _, err, status = Open3.capture3("#{tar_command} #{dest} #{src}")
+        STDERR.puts "tar command stderr:\n#{err}" unless err.empty?
+        if status.exitstatus != 0
+          raise "ERROR: #{tar_command} exited #{status.exitstatus}"
+        end
+        unless File.exist?(dest)
+          raise "ERROR: Tar destination file does not exist"
+        end
+        if File.size(dest) == 0
+          raise "ERROR: Tar destionation file is 0 bytes."
+        end
         File.open(dest)
       end
     end
