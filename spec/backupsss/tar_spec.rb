@@ -99,13 +99,29 @@ describe Backupsss::Tar do
     end
 
     context 'when src and dest dir exist with correct permissions' do
-      before  { FileUtils.mkdir_p(src) }
-      before  { FileUtils.mkdir_p(File.dirname(dest)) }
-      after   { FileUtils.rm_rf(src) }
-      after   { FileUtils.rm_rf(File.dirname(dest)) }
-      subject { Backupsss::Tar.new(src, dest).make }
+      let(:subject) { Backupsss::Tar.new(src, dest) }
+      let(:dbl_file) { double(File) }
+      before(:each) do
+        allow(subject).to receive(:valid_dest?).and_return(true)
+        allow(subject).to receive(:valid_src?).and_return(true)
+        allow(subject).to receive(:tar_command).and_return('tarcmd')
+        allow(Open3).to receive(:capture3)
+        allow(File).to receive(:open).and_return(dbl_file)
+      end
 
-      it { is_expected.to be_a(File) }
+      it 'calls the appropriate command' do
+        expect(subject).to receive(:valid_dest?).once.ordered
+        expect(subject).to receive(:valid_src?).once.ordered
+        expect(Open3).to receive(:capture3).once.ordered
+          .with("tarcmd #{dest} #{src}")
+        subject.make
+      end
+      it 'returns the open File object' do
+        expect(subject).to receive(:valid_dest?).once.ordered
+        expect(subject).to receive(:valid_src?).once.ordered
+        expect(File).to receive(:open).once.ordered.with(dest)
+        expect(subject.make).to eq(dbl_file)
+      end
     end
   end
 end
