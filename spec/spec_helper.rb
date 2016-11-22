@@ -8,7 +8,10 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
   [SimpleCov::Formatter::HTMLFormatter, SimpleCov::Formatter::Console]
 )
 
-SimpleCov.start
+SimpleCov.start do
+  add_filter '/vendor/'
+  add_filter '/spec/'
+end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 

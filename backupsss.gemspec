@@ -6,10 +6,11 @@ require 'backupsss/version'
 Gem::Specification.new do |spec|
   spec.name          = 'backupsss'
   spec.version       = Backupsss::VERSION
-  spec.authors       = ['Reppard Walker', 'Jonathan Niesen']
+  spec.authors       = ['Reppard Walker', 'Jonathan Niesen', 'Jason Antman']
   spec.email         = [
     'reppard.walker@manheim.com',
-    'jonathan.niesen@manheim.com'
+    'jonathan.niesen@manheim.com',
+    'jason@jasonantman.com'
   ]
 
   spec.homepage      = 'https://github.com/manheim/backupsss'

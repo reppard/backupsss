@@ -65,7 +65,9 @@ describe Backupsss::Janitor do
 
     context 'when provided garbage can be cleaned up' do
       let(:message) do
-        msg = garbage.inject([]) { |a, e| a << "Cleaning up #{e}" }.join("\n")
+        msg = garbage.inject([]) do |acc, elem|
+          acc << "Cleaning up #{elem}"
+        end.join("\n")
         msg << "\nFinished cleaning up."
       end
 

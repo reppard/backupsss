@@ -25,7 +25,7 @@ Install it like:
 ```shell
 
   $ S3_BUCKET=bucket_name \
-    S3_BUCKET_KEY=bucket_key \
+    S3_BUCKET_PREFIX=bucket_key \
     BACKUP_SRC_DIR=/path/to/data \
     BACKUP_DEST_DIR=/backups \
     BACKUP_FREQ="*/30 * * * *" \
@@ -57,4 +57,3 @@ The gem is available as open source under the terms of the [MIT License][MIT].
 
 [rubygems]: https://rubygems.org
 [MIT]: http://opensource.org/licenses/MIT
-
