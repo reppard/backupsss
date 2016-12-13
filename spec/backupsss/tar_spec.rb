@@ -8,10 +8,12 @@ def dbl_exitstatus(code)
 end
 
 describe Backupsss::Tar do
-  let(:src)      { 'spec/fixtures/backup_src' }
-  let(:filename) { 'backup.tar' }
-  let(:dest)     { "spec/fixtures/backups/#{filename}" }
-  before         { allow(File).to receive(:exist?) { true } }
+  let(:empty_src) { 'spec/fixtures/backup_src/empty' }
+  let(:valid_src) { 'spec/fixtures/backup_src/with_data' }
+  let(:src)       { 'spec/fixtures/backup_src' }
+  let(:filename)  { 'backup.tar' }
+  let(:dest)      { "spec/fixtures/backups/#{filename}" }
+  before          { allow(File).to receive(:exist?) { true } }
 
   describe '#filename' do
     subject { Backupsss::Tar.new(src, dest).filename }
