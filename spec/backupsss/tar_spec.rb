@@ -22,8 +22,6 @@ describe Backupsss::Tar do
   end
 
   describe '#valid_src?' do
-    subject { -> { Backupsss::Tar.new(valid_src, '').valid_src? } }
-
     context 'when src does not exist on the file system' do
       subject { -> { Backupsss::Tar.new('does_not_exist', '').valid_src? } }
 
@@ -32,15 +30,15 @@ describe Backupsss::Tar do
     end
 
     context 'when src is not readable' do
-      before { allow(File).to receive(:readable?) { false } }
+      subject { -> { Backupsss::Tar.new(empty_src, '').valid_src? } }
+      before  { allow(File).to receive(:readable?) { false } }
 
       it { is_expected.to raise_error(Errno::EPERM) }
-      it { is_expected.to raise_error(/#{src}$/) }
+      it { is_expected.to raise_error(/#{empty_src}$/) }
     end
 
     context 'when src exists and is readable' do
-      before  { allow(File).to receive(:readable?) { true } }
-      subject { Backupsss::Tar.new(src, '').valid_src? }
+      subject { Backupsss::Tar.new(valid_src, '').valid_src? }
 
       it { is_expected.to be true }
     end
