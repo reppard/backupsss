@@ -16,19 +16,19 @@ describe Backupsss::Tar do
   before          { allow(File).to receive(:exist?) { true } }
 
   describe '#filename' do
-    subject { Backupsss::Tar.new(src, dest).filename }
+    subject { Backupsss::Tar.new(valid_src, dest).filename }
 
     it { is_expected.to eq(filename) }
   end
 
   describe '#valid_src?' do
-    subject { -> { Backupsss::Tar.new(src, '').valid_src? } }
+    subject { -> { Backupsss::Tar.new(valid_src, '').valid_src? } }
 
     context 'when src does not exist on the file system' do
-      before { allow(File).to receive(:exist?) { false } }
+      subject { -> { Backupsss::Tar.new('does_not_exist', '').valid_src? } }
 
       it { is_expected.to raise_error(Errno::ENOENT) }
-      it { is_expected.to raise_error(/#{src}$/) }
+      it { is_expected.to raise_error(/does_not_exist$/) }
     end
 
     context 'when src is not readable' do

@@ -56,7 +56,7 @@ module Backupsss
     end
 
     def dir_exists?(dir)
-      File.exist?(dir) || raise_sys_err(dir, Errno::ENOENT::Errno)
+      File.exist?(File.open(dir)) || raise_sys_err(dir, Errno::ENOENT::Errno)
     end
 
     def src_readable?
