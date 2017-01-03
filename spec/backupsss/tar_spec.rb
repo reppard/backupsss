@@ -12,7 +12,7 @@ describe Backupsss::Tar do
   let(:valid_src) { 'spec/fixtures/backup_src/with_data' }
   let(:src)       { 'spec/fixtures/backup_src' }
   let(:filename)  { 'backup.tar' }
-  let(:dest)      { "spec/fixtures/backups/#{filename}" }
+  let(:dest)      { "spec/fixtures/backups_dest/#{filename}" }
   before          { allow(File).to receive(:exist?) { true } }
 
   describe '#filename' do
