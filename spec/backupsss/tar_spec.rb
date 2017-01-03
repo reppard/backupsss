@@ -84,7 +84,7 @@ describe Backupsss::Tar do
   end
 
   describe '#make' do
-    subject { -> { Backupsss::Tar.new('some/src', 'some/dest.tar').make } }
+    subject { -> { Backupsss::Tar.new(valid_src, dest).make } }
 
     context 'when src is not readable' do
       before { allow(File).to receive(:readable?) { false } }
