@@ -45,17 +45,17 @@ describe Backupsss::Tar do
   end
 
   describe '#valid_dest?' do
-    subject { -> { Backupsss::Tar.new('', dest).valid_dest? } }
-
     context 'when dest dir does not exist on the file system' do
-      before { allow(File).to receive(:exist?) { false } }
+    let(:invalid_dest) { "spec/fixtures/invalid/#{filename}" }
+      subject { -> { Backupsss::Tar.new(valid_src, invalid_dest).valid_dest? } }
 
       it { is_expected.to raise_error(Errno::ENOENT) }
-      it { is_expected.to raise_error(/#{File.dirname(dest)}$/) }
+      it { is_expected.to raise_error(/spec\/fixtures\/invalid$/) }
     end
 
     context 'when dest dir is not writable' do
-      before { allow(File).to receive(:readable?) { false } }
+      subject { -> { Backupsss::Tar.new(valid_src, dest).valid_dest? } }
+      before { allow(File).to receive(:writable?) { false } }
 
       it { is_expected.to raise_error(Errno::EPERM) }
       it { is_expected.to raise_error(/#{File.dirname(dest)}$/) }
