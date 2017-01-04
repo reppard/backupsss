@@ -84,26 +84,6 @@ describe Backupsss::Tar do
   end
 
   describe '#make' do
-    subject { -> { Backupsss::Tar.new(valid_src, dest).make } }
-
-    context 'when src is not readable' do
-      before { allow(File).to receive(:readable?) { false } }
-
-      it { is_expected.to raise_error(Errno::EPERM) }
-    end
-
-    context 'when dest is not writable' do
-      before { allow(File).to receive(:writable?) { false } }
-
-      it { is_expected.to raise_error(Errno::EPERM) }
-    end
-
-    context 'when src or dest do not exist' do
-      before { allow(File).to receive(:exist?) { false } }
-
-      it { is_expected.to raise_error(Errno::ENOENT) }
-    end
-
     context 'when src and dest dir exist with correct permissions' do
       let(:subject) { Backupsss::Tar.new(src, dest) }
       let(:dbl_file) { double(File) }
