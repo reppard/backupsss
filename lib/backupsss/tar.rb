@@ -20,10 +20,9 @@ module Backupsss
     def valid_exit?(exitstatus, err)
       $stderr.puts "tar command stderr:\n#{err}" unless err.empty?
 
-      case
-      when exitstatus == 0
+      if exitstatus == 0
         true
-      when exitstatus == 1 && err.match(/file changed as we read it/)
+      elsif exitstatus == 1 && err.match(/file changed as we read it/)
         true
       else
         raise "ERROR: #{tar_command} exited #{exitstatus}"
