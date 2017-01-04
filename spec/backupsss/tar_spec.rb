@@ -85,32 +85,14 @@ describe Backupsss::Tar do
 
   describe '#make' do
     context 'when src and dest dir exist with correct permissions' do
-      let(:subject) { Backupsss::Tar.new(src, dest) }
-      let(:dbl_file) { double(File) }
-      let(:dbl_status) { dbl_exitstatus(0) }
-      before(:each) do
-        allow(subject).to receive(:valid_dest?).and_return(true)
-        allow(subject).to receive(:valid_src?).and_return(true)
-        allow(subject).to receive(:tar_command).and_return('tarcmd')
-        allow(subject).to receive(:check_tar_result)
-        allow(Open3).to receive(:capture3).and_return(['', '', dbl_status])
-        allow(STDERR).to receive(:puts)
-        allow(File).to receive(:open).and_return(dbl_file)
+      subject { Backupsss::Tar.new(valid_src, dest) }
+
+      it 'returns a File object' do
+        expect(subject.make).to be_kind_of(File)
       end
 
-      it 'validates inputs, calls the command and checks the result' do
-        expect(subject).to receive(:valid_dest?).once.ordered
-        expect(subject).to receive(:valid_src?).once.ordered
-        expect(Open3).to receive(:capture3).once.ordered
-          .with("tarcmd #{dest} #{src}")
-        expect(STDERR).to_not receive(:puts)
-        expect(subject).to receive(:check_tar_result).once.ordered
-          .with(dbl_status)
-        subject.make
-      end
-
-      it 'returns the open File object' do
-        expect(subject.make).to eq(dbl_file)
+      it 'exits cleanly' do
+        expect { subject.make }.to_not output.to_stderr
       end
     end
   end
