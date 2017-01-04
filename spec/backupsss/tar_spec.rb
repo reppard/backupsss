@@ -14,6 +14,7 @@ describe Backupsss::Tar do
   let(:filename)  { 'backup.tar' }
   let(:dest)      { "spec/fixtures/backups_dest/#{filename}" }
   before          { allow(File).to receive(:exist?) { true } }
+  after(:all)     { FileUtils.rm('spec/fixtures/backups_dest/backup.tar') }
 
   describe '#filename' do
     subject { Backupsss::Tar.new(valid_src, dest).filename }
