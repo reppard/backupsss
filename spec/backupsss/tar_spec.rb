@@ -138,7 +138,7 @@ describe Backupsss::Tar do
     context 'when exits 1 with valid warning' do
       let(:status)          { 1 }
       let(:err)             { 'file: file changed as we read it' }
-      let(:expected_output) { "tar command stderr:\n#{err}\n"}
+      let(:expected_output) { "tar command stderr:\n#{err}\n" }
 
       subject do
         Backupsss::Tar.new(valid_src, dest).valid_exit?(status, err)
