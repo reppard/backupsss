@@ -14,13 +14,20 @@ module Backupsss
     def make
       return unless valid_dest? && valid_src?
       _, err, status = Open3.capture3("#{tar_command} #{dest} #{src}")
-      STDERR.puts "tar command stderr:\n#{err}" unless err.empty?
-      File.open(dest) if valid_status?(status.exitstatus) && valid_file?
+      File.open(dest) if valid_exit?(status.exitstatus, err) && valid_file?
     end
 
-    def valid_status?(exitstatus)
-      raise "ERROR: #{tar_command} exited #{exitstatus}" if exitstatus.nonzero?
-      true
+    def valid_exit?(exitstatus, err)
+      $stderr.puts "tar command stderr:\n#{err}" unless err.empty?
+
+      case
+      when exitstatus == 0
+        true
+      when exitstatus == 1 && err.match(/file changed as we read it/)
+        true
+      else
+        raise "ERROR: #{tar_command} exited #{exitstatus}"
+      end
     end
 
     def valid_file?
