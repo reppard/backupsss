@@ -7,7 +7,6 @@ describe Backupsss::Tar do
   let(:src)       { 'spec/fixtures/backup_src' }
   let(:filename)  { 'backup.tar' }
   let(:dest)      { "spec/fixtures/backups_dest/#{filename}" }
-  before          { allow(File).to receive(:exist?) { true } }
   after(:all)     { FileUtils.rm('spec/fixtures/backups_dest/backup.tar') }
 
   describe '#filename' do
