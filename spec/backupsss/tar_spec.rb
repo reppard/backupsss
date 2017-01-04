@@ -1,12 +1,6 @@
 require 'spec_helper'
 require 'backupsss/tar'
 
-def dbl_exitstatus(code)
-  d = double
-  allow(d).to receive(:exitstatus).and_return(code)
-  d
-end
-
 describe Backupsss::Tar do
   let(:empty_src) { 'spec/fixtures/backup_src/empty' }
   let(:valid_src) { 'spec/fixtures/backup_src/with_data' }
@@ -98,48 +92,47 @@ describe Backupsss::Tar do
     end
   end
 
-  describe '#check_tar_result' do
-    context 'when tar exits non-zero' do
-      let(:subject) { Backupsss::Tar.new(src, dest) }
-      let(:dbl_status) { dbl_exitstatus(3) }
-      it 'raises an error' do
-        allow(subject).to receive(:tar_command).and_return('tarcmd')
-        allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:size).and_return(999)
+  describe '#valid_file?' do
+    let(:missing_msg)   { 'ERROR: Tar destination file does not exist' }
+    let(:zero_byte_msg) { 'ERROR: Tar destionation file is 0 bytes.' }
+    subject { -> { Backupsss::Tar.new(valid_src, dest).valid_file? } }
 
-        expect { subject.check_tar_result(dbl_status) }
-          .to raise_error(RuntimeError, /ERROR: tarcmd exited 3/)
-      end
+    context 'when file is missing' do
+      before { allow(File).to receive(:exist?).with(dest).and_return(false) }
+
+      it { is_expected.to raise_error(missing_msg) }
     end
-    context 'when destination file does not exist' do
-      let(:subject) { Backupsss::Tar.new(src, dest) }
-      let(:dbl_status) { dbl_exitstatus(0) }
-      it 'raises an error' do
-        allow(subject).to receive(:tar_command).and_return('tarcmd')
-        allow(File).to receive(:exist?).and_return(false)
-        allow(File).to receive(:size).and_return(999)
 
-        expect(File).to receive(:exist?).once.with(dest)
-        expect(File).to_not receive(:size)
-        expect { subject.check_tar_result(dbl_status) }.to raise_error(
-          RuntimeError, /ERROR: Tar destination file does not exist/
-        )
-      end
+    context 'when file is 0 bytes' do
+      before { allow(File).to receive(:size).with(dest).and_return(0) }
+
+      it { is_expected.to raise_error(zero_byte_msg) }
     end
-    context 'when destination file is 0 bytes' do
-      let(:subject) { Backupsss::Tar.new(src, dest) }
-      let(:dbl_status) { dbl_exitstatus(0) }
-      it 'raises an error' do
-        allow(subject).to receive(:tar_command).and_return('tarcmd')
-        allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:size).and_return(0)
 
-        expect(File).to receive(:exist?).once.ordered.with(dest)
-        expect(File).to receive(:size).once.ordered.with(dest)
-        expect { subject.check_tar_result(dbl_status) }.to raise_error(
-          RuntimeError, /ERROR: Tar destionation file is 0 bytes\./
-        )
+    context 'when file exists and is valid' do
+      subject { Backupsss::Tar.new(valid_src, dest).valid_file? }
+      before  { allow(File).to receive(:size).with(dest).and_return(999) }
+
+      it { is_expected.to eq(true) }
+    end
+  end
+
+  describe '#valid_status?' do
+    context 'when nonzero' do
+      let(:exit_status) { 1 }
+
+      subject do
+        -> { Backupsss::Tar.new(valid_src, dest).valid_status?(exit_status) }
       end
+
+      it { is_expected.to raise_error(/ERROR: tar.* exited #{exit_status}/) }
+    end
+
+    context 'when zero' do
+      let(:exit_status) { 0 }
+      subject { Backupsss::Tar.new(valid_src, dest).valid_status?(exit_status) }
+
+      it { is_expected.to eq(true) }
     end
   end
 end
