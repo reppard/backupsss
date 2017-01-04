@@ -29,6 +29,15 @@ module Backupsss
       raise 'ERROR: Tar destionation file is 0 bytes.' if File.size(dest).zero?
     end
 
+    def valid_file?
+      missing_msg   = 'ERROR: Tar destination file does not exist'
+      zero_byte_msg = 'ERROR: Tar destionation file is 0 bytes.'
+
+      raise missing_msg unless File.exist?(dest)
+      raise zero_byte_msg if File.size(dest).zero?
+      true
+    end
+
     def valid_dest?
       dir_exists?(dest_dir) && dest_writable?
     end
