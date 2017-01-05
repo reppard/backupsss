@@ -31,7 +31,7 @@ module Backupsss
 
     def valid_file?
       missing_msg   = 'ERROR: Tar destination file does not exist'
-      zero_byte_msg = 'ERROR: Tar destionation file is 0 bytes.'
+      zero_byte_msg = 'ERROR: Tar destination file is 0 bytes.'
 
       raise missing_msg unless File.exist?(dest)
       raise zero_byte_msg if File.size(dest).zero?

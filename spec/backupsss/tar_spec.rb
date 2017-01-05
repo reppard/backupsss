@@ -93,7 +93,7 @@ describe Backupsss::Tar do
 
   describe '#valid_file?' do
     let(:missing_msg)   { 'ERROR: Tar destination file does not exist' }
-    let(:zero_byte_msg) { 'ERROR: Tar destionation file is 0 bytes.' }
+    let(:zero_byte_msg) { 'ERROR: Tar destination file is 0 bytes.' }
     subject { -> { Backupsss::Tar.new(valid_src, dest).valid_file? } }
 
     context 'when file is missing' do
