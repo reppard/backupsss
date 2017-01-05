@@ -126,14 +126,14 @@ describe Backupsss::Tar do
   describe '#valid_exit?' do
     let(:err) { '' }
 
-    context 'when exits zero' do
+    context 'when status is zero' do
       let(:status) { 0 }
       subject { Backupsss::Tar.new(valid_src, dest).valid_exit?(status, err) }
 
       it { is_expected.to eq(true) }
     end
 
-    context 'when exits greater than 1' do
+    context 'when status is greater than 1' do
       let(:status) { 2 }
       subject do
         -> { Backupsss::Tar.new(valid_src, dest).valid_exit?(status, err) }
@@ -142,7 +142,7 @@ describe Backupsss::Tar do
       it { is_expected.to raise_error(/ERROR: tar.* exited #{status}/) }
     end
 
-    context 'when exits 1 with valid warning' do
+    context 'when status is 1 with valid warning' do
       let(:status)          { 1 }
       let(:err)             { 'file: file changed as we read it' }
       let(:expected_output) { "tar command stderr:\n#{err}\n" }
