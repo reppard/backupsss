@@ -12,21 +12,30 @@ module Backupsss
     end
 
     def make
-      return nil unless valid_dest? && valid_src?
+      return unless valid_dest? && valid_src?
       _, err, status = Open3.capture3("#{tar_command} #{dest} #{src}")
-      STDERR.puts "tar command stderr:\n#{err}" unless err.empty?
-      check_tar_result(status)
-      File.open(dest)
+      File.open(dest) if valid_exit?(status.exitstatus, err) && valid_file?
     end
 
-    def check_tar_result(status)
-      if status.exitstatus.nonzero?
-        raise "ERROR: #{tar_command} exited #{status.exitstatus}"
+    def valid_exit?(exitstatus, err)
+      $stderr.puts "tar command stderr:\n#{err}" unless err.empty?
+
+      if exitstatus.zero?
+        true
+      elsif exitstatus == 1 && err.match(/file changed as we read it/)
+        true
+      else
+        raise "ERROR: #{tar_command} exited #{exitstatus}"
       end
-      unless File.exist?(dest)
-        raise 'ERROR: Tar destination file does not exist'
-      end
-      raise 'ERROR: Tar destionation file is 0 bytes.' if File.size(dest).zero?
+    end
+
+    def valid_file?
+      missing_msg   = 'ERROR: Tar destination file does not exist'
+      zero_byte_msg = 'ERROR: Tar destination file is 0 bytes.'
+
+      raise missing_msg unless File.exist?(dest)
+      raise zero_byte_msg if File.size(dest).zero?
+      true
     end
 
     def valid_dest?
@@ -56,7 +65,7 @@ module Backupsss
     end
 
     def dir_exists?(dir)
-      File.exist?(dir) || raise_sys_err(dir, Errno::ENOENT::Errno)
+      File.exist?(File.open(dir)) || raise_sys_err(dir, Errno::ENOENT::Errno)
     end
 
     def src_readable?
