@@ -103,14 +103,21 @@ describe Backupsss::Tar do
     end
 
     context 'when file is 0 bytes' do
-      before { allow(File).to receive(:size).with(dest).and_return(0) }
+      before do
+        allow(File).to receive(:size).with(dest).and_return(0)
+        allow(File).to receive(:exist?).with(dest).and_return(true)
+      end
 
       it { is_expected.to raise_error(zero_byte_msg) }
     end
 
-    context 'when file exists and is valid' do
+    context 'when file exists and is a valid size' do
+      before do
+        allow(File).to receive(:size).with(dest).and_return(1)
+        allow(File).to receive(:exist?).with(dest).and_return(true)
+      end
+
       subject { Backupsss::Tar.new(valid_src, dest).valid_file? }
-      before  { allow(File).to receive(:size).with(dest).and_return(999) }
 
       it { is_expected.to eq(true) }
     end
