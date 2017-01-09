@@ -14,19 +14,19 @@ module Backupsss
     def make
       return unless valid_dest? && valid_src?
       _, err, status = Open3.capture3("#{tar_command} #{dest} #{src}")
-      File.open(dest) if valid_exit?(status.exitstatus, err) && valid_file?
+      File.open(dest) if valid_exit?(status, err) && valid_file?
     end
 
-    def valid_exit?(exitstatus, err)
-      $stderr.puts "tar command stderr:\n#{err}" unless err.empty?
+    def valid_exit?(status, err)
+      output = []
+      output << "command.......#{tar_command}"
+      output << "stderr........#{err}" unless err.empty?
+      output << "status........#{status}"
+      output << "exit code.....#{status.to_i}"
+      $stdout.puts output.join("\n")
 
-      if exitstatus.zero?
-        true
-      elsif exitstatus == 1 && err.match(/file changed as we read it/)
-        true
-      else
-        raise "ERROR: #{tar_command} exited #{exitstatus}"
-      end
+      return true if success_cases(status.to_i, err)
+      raise "ERROR: #{tar_command} exited #{status.to_i}"
     end
 
     def valid_file?
@@ -56,6 +56,10 @@ module Backupsss
 
     private
 
+    def clean_exit(status)
+      status.zero?
+    end
+
     def dest_dir
       File.dirname(dest)
     end
@@ -68,8 +72,16 @@ module Backupsss
       File.exist?(File.open(dir)) || raise_sys_err(dir, Errno::ENOENT::Errno)
     end
 
+    def file_changed?(signal_int, err)
+      signal_int == 1 && err.match(/file changed as we read it/)
+    end
+
     def src_readable?
       File.readable?(src) || raise_sys_err(src, Errno::EPERM::Errno)
+    end
+
+    def success_cases(signal_int, err)
+      clean_exit(signal_int) || file_changed?(signal_int, err)
     end
 
     def raise_sys_err(dir, err)
