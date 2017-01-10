@@ -30,12 +30,16 @@ module Backupsss
     end
 
     def valid_file?
-      missing_msg   = 'ERROR: Tar destination file does not exist'
-      zero_byte_msg = 'ERROR: Tar destination file is 0 bytes.'
-
-      raise missing_msg unless File.exist?(dest)
-      raise zero_byte_msg if File.size(dest).zero?
+      raise messages[:no_file] unless File.exist?(dest)
+      raise messages[:zero_byte] if File.size(dest).zero?
       true
+    end
+
+    def messages
+      {
+        :no_file   => 'ERROR: Tar destination file does not exist',
+        :zero_byte => 'ERROR: Tar destination file is 0 bytes.'
+      }
     end
 
     def valid_dest?
