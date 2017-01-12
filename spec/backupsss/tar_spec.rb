@@ -92,7 +92,7 @@ describe Backupsss::Tar, :ignore_stdout do
   end
 
   describe '#valid_file?' do
-    let(:missing_msg)   { 'ERROR: Tar destination file does not exist' }
+    let(:missing_msg)   { 'ERROR: Tar destination file does not exist.' }
     let(:zero_byte_msg) { 'ERROR: Tar destination file is 0 bytes.' }
     subject { -> { Backupsss::Tar.new(valid_src, dest).valid_file? } }
 

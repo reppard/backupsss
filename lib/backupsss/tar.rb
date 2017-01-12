@@ -37,8 +37,8 @@ module Backupsss
 
     def messages
       {
-        :no_file   => 'ERROR: Tar destination file does not exist',
-        :zero_byte => 'ERROR: Tar destination file is 0 bytes.'
+        no_file:   'ERROR: Tar destination file does not exist.',
+        zero_byte: 'ERROR: Tar destination file is 0 bytes.'
       }
     end
 
