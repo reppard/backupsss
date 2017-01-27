@@ -17,13 +17,25 @@ module Backupsss
 
     private
 
+    def create_multipart_upload
+      $stdout.puts 'Creating a multipart upload'
+
+      client.create_multipart_upload(bucket_opts)
+    end
+
     def large_file(file)
       file.size > MAX_FILE_SIZE
     end
 
+    def complete_multipart_upload_request(upload_id, parts)
+      bucket_opts.merge(
+        upload_id: upload_id,
+        multipart_upload: { parts: parts }
+      )
+    end
+
     def multi_upload(file)
-      multipart_resp = client.create_multipart_upload(bucket_opts)
-      upload_parts(file, multipart_resp.upload_id)
+      upload_id = create_multipart_upload.upload_id
 
       client.complete_multipart_upload(
         bucket_opts.merge(
@@ -51,7 +63,10 @@ module Backupsss
     end
 
     def part_count(file)
-      (file.size.to_f / MAX_FILE_SIZE.to_f).ceil
+      c = (file.size.to_f / MAX_FILE_SIZE.to_f).ceil
+      $stdout.puts "Uploading backup as #{c} parts"
+
+      c
     end
 
     def single_upload(file)
