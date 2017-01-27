@@ -27,9 +27,9 @@ module Backupsss
 
     def large_file(file)
       $stdout.puts 'Checking backup size ...'
-      is_lg = file.size > MAX_FILE_SIZE
-      $stdout.puts 'Size of backup is less than 100MB' unless is_lg
-      $stdout.puts 'Size of backup is greater than 100MB' if is_lg
+      is_lg  = file.size > MAX_FILE_SIZE
+      status = is_lg ? 'greater than' : 'less than or equal to'
+      $stdout.puts "Size of backup is #{status} 100MB"
 
       is_lg
     end
@@ -46,10 +46,10 @@ module Backupsss
       yield
       e = Time.now
       duration = ((e - s) / 60).round(2)
-      $stdout.puts [
-        "Completed multipart upload at #{e}",
-        "Completed in #{duration} minutes."
-      ].join("\n")
+      output   = ["Completed multipart upload at #{e}"]
+      output << "Completed in #{duration} minutes."
+
+      $stdout.puts output.join("\n")
     end
 
     def abort_multipart_message(error, upload_id)
@@ -76,10 +76,8 @@ module Backupsss
         bail_upload_part_on_fail(part, upload_id) do
           $stdout.puts "#{upload_id}: Uploading part number #{part}\n"
           r = client.upload_part(upload_part_params(file, part, upload_id))
-
-          r.on_success do
-            $stdout.puts "#{upload_id}: Completed uploading part number #{part}"
-          end
+          success_msg = "#{upload_id}: Completed uploading part number #{part}"
+          r.on_success { $stdout.puts success_msg }
 
           { etag: r.etag, part_number: part }
         end
@@ -96,11 +94,10 @@ module Backupsss
     def bail_upload_part_on_fail(part, upload_id)
       yield
     rescue StandardError => e
-      raise [
-        "#{upload_id}: Failed to upload part number #{part}",
-        "because of #{e.message}",
-        "#{upload_id}: Aborting remaining parts"
-      ].join("\n")
+      output = ["#{upload_id}: Failed to upload part number #{part}"]
+      output << "because of #{e.message}"
+      output << "#{upload_id}: Aborting remaining parts"
+      raise output.join("\n")
     end
 
     def upload_part_params(file, part, upload_id)

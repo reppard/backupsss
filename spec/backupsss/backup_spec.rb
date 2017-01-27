@@ -53,7 +53,7 @@ describe Backupsss::Backup, :ignore_stdout do
       let(:aws_stubs) { { put_object: nil } }
 
       it 'informs about a small file' do
-        info = 'Size of backup is less than 100MB'
+        info = 'Size of backup is less than or equal to 100MB'
 
         expect { backup.put_file(file) }
           .to output(/#{info}/).to_stdout
