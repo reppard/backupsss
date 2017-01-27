@@ -36,8 +36,7 @@ module Backupsss
 
     def complete_multipart_upload_request(upload_id, parts)
       bucket_opts.merge(
-        upload_id: upload_id,
-        multipart_upload: { parts: parts }
+        upload_id: upload_id, multipart_upload: { parts: parts }
       )
     end
 
@@ -106,11 +105,9 @@ module Backupsss
 
     def upload_part_params(file, part, upload_id)
       start = (part - 1) * MAX_FILE_SIZE
-      bucket_opts.merge(
-        part_number: part,
-        body: IO.read(file.path, MAX_FILE_SIZE, start),
-        upload_id: upload_id
-      )
+      body  = IO.read(file.path, MAX_FILE_SIZE, start)
+
+      bucket_opts.merge(part_number: part, body: body, upload_id: upload_id)
     end
 
     def part_count(file)
