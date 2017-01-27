@@ -41,5 +41,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'codeclimate-test-reporter', '~> 0.4'
 
   spec.add_runtime_dependency 'aws-sdk'
+  spec.add_runtime_dependency 'parallel'
   spec.add_runtime_dependency 'rufus-scheduler'
 end

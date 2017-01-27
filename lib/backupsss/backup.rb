@@ -1,3 +1,5 @@
+require 'parallel'
+
 module Backupsss
   # A class for delivering a tar to S3
   class Backup
@@ -24,7 +26,12 @@ module Backupsss
     end
 
     def large_file(file)
-      file.size > MAX_FILE_SIZE
+      $stdout.puts 'Checking backup size ...'
+      is_lg = file.size > MAX_FILE_SIZE
+      $stdout.puts 'Size of backup is less than 100MB' unless is_lg
+      $stdout.puts 'Size of backup is greater than 100MB' if is_lg
+
+      is_lg
     end
 
     def complete_multipart_upload_request(upload_id, parts)
@@ -34,30 +41,74 @@ module Backupsss
       )
     end
 
+    def timed_multipart_upload
+      s = Time.now
+      $stdout.puts "Starting multipart upload at #{s}"
+      yield
+      e = Time.now
+      duration = ((e - s) / 60).round(2)
+      $stdout.puts [
+        "Completed multipart upload at #{e}",
+        "Completed in #{duration} minutes."
+      ].join("\n")
+    end
+
+    def abort_multipart_message(error, upload_id)
+      "#{error}\n#{upload_id}: Aborting multipart upload"
+    end
+
     def multi_upload(file)
       upload_id = create_multipart_upload.upload_id
 
-      client.complete_multipart_upload(
-        bucket_opts.merge(
-          upload_id: multipart_resp.upload_id
-        )
-      )
-    end
+      bail_multipart_on_fail(upload_id) do
+        timed_multipart_upload do
+          parts = upload_parts(file, upload_id).sort do |a, b|
+            a[:part_number] <=> b[:part_number]
+          end
 
-    def upload_parts(file, upload_id)
-      (1..part_count(file)).inject([]) do |responses, part|
-        r = client.upload_part(
-          upload_part_params(file, part, upload_id)
-        )
-        r.on_success { $stdout.puts "Successfully uploaded part #{part}" }
-        responses << r
+          req = complete_multipart_upload_request(upload_id, parts)
+          client.complete_multipart_upload(req)
+        end
       end
     end
 
+    def upload_parts(file, upload_id)
+      Parallel.map(1..part_count(file), in_threads: 10) do |part|
+        bail_upload_part_on_fail(part, upload_id) do
+          $stdout.puts "#{upload_id}: Uploading part number #{part}\n"
+          r = client.upload_part(upload_part_params(file, part, upload_id))
+
+          r.on_success do
+            $stdout.puts "#{upload_id}: Completed uploading part number #{part}"
+          end
+
+          { etag: r.etag, part_number: part }
+        end
+      end
+    end
+
+    def bail_multipart_on_fail(upload_id)
+      yield
+    rescue StandardError => e
+      $stdout.puts abort_multipart_message(e, upload_id)
+      client.abort_multipart_upload(bucket_opts.merge(upload_id: upload_id))
+    end
+
+    def bail_upload_part_on_fail(part, upload_id)
+      yield
+    rescue StandardError => e
+      raise [
+        "#{upload_id}: Failed to upload part number #{part}",
+        "because of #{e.message}",
+        "#{upload_id}: Aborting remaining parts"
+      ].join("\n")
+    end
+
     def upload_part_params(file, part, upload_id)
+      start = (part - 1) * MAX_FILE_SIZE
       bucket_opts.merge(
         part_number: part,
-        body: file.read(MAX_FILE_SIZE),
+        body: IO.read(file.path, MAX_FILE_SIZE, start),
         upload_id: upload_id
       )
     end
@@ -74,10 +125,8 @@ module Backupsss
     end
 
     def bucket_opts
-      {
-        bucket: config[:s3_bucket],
-        key:    "#{config[:s3_bucket_prefix]}/#{filename}"
-      }
+      { bucket: config[:s3_bucket],
+        key:    "#{config[:s3_bucket_prefix]}/#{filename}" }
     end
   end
 end
