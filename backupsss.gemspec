@@ -35,11 +35,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec', '~> 4.6.4'
   spec.add_development_dependency 'guard-rubocop', '~> 1.2'
   spec.add_development_dependency 'guard-bundler', '~> 2.1'
-  spec.add_development_dependency 'rubocop', '~> 0.37'
+  spec.add_development_dependency 'rubocop', '0.46'
   spec.add_development_dependency 'simplecov', '~> 0.11.2'
   spec.add_development_dependency 'simplecov-console', '~> 0.3.0'
   spec.add_development_dependency 'codeclimate-test-reporter', '~> 0.4'
 
-  spec.add_runtime_dependency 'aws-sdk'
-  spec.add_runtime_dependency 'rufus-scheduler'
+  spec.add_runtime_dependency 'aws-sdk', '~> 2.7.0'
+  spec.add_runtime_dependency 'parallel', '~> 1.10.0'
+  spec.add_runtime_dependency 'rufus-scheduler', '~> 3.3.2'
 end

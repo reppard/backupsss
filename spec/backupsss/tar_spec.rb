@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'backupsss/tar'
 
-describe Backupsss::Tar do
+describe Backupsss::Tar, :ignore_stdout do
   let(:empty_src) { 'spec/fixtures/backup_src/empty' }
   let(:valid_src) { 'spec/fixtures/backup_src/with_data' }
   let(:src)       { 'spec/fixtures/backup_src' }
@@ -86,13 +86,13 @@ describe Backupsss::Tar do
       end
 
       it 'exits cleanly' do
-        expect { subject.make }.to_not output.to_stderr
+        expect { subject.make }.to_not raise_error
       end
     end
   end
 
   describe '#valid_file?' do
-    let(:missing_msg)   { 'ERROR: Tar destination file does not exist' }
+    let(:missing_msg)   { 'ERROR: Tar destination file does not exist.' }
     let(:zero_byte_msg) { 'ERROR: Tar destination file is 0 bytes.' }
     subject { -> { Backupsss::Tar.new(valid_src, dest).valid_file? } }
 
@@ -124,28 +124,36 @@ describe Backupsss::Tar do
   end
 
   describe '#valid_exit?' do
+    Status = Struct.new(:to_i, :to_s)
     let(:err) { '' }
 
     context 'when status is zero' do
-      let(:status) { 0 }
+      let(:status) { Status.new(0, 'pid 18327 exit 0') }
       subject { Backupsss::Tar.new(valid_src, dest).valid_exit?(status, err) }
 
       it { is_expected.to eq(true) }
     end
 
     context 'when status is greater than 1' do
-      let(:status) { 2 }
+      let(:status) { Status.new(2, 'pid 21320 SIGINT (signal 2)') }
       subject do
         -> { Backupsss::Tar.new(valid_src, dest).valid_exit?(status, err) }
       end
 
-      it { is_expected.to raise_error(/ERROR: tar.* exited #{status}/) }
+      it { is_expected.to raise_error(/ERROR: tar.* exited #{status.to_i}/) }
     end
 
     context 'when status is 1 with valid warning' do
-      let(:status)          { 1 }
+      let(:status)          { Status.new(1, 'pid 16145 SIGHUP (signal 1)') }
       let(:err)             { 'file: file changed as we read it' }
-      let(:expected_output) { "tar command stderr:\n#{err}\n" }
+      let(:expected_output) do
+        [
+          "command.......tar -zcvf\n",
+          "stderr........#{err}\n",
+          "status........pid 16145 SIGHUP (signal 1)\n",
+          "exit code.....1\n"
+        ].join
+      end
 
       subject do
         Backupsss::Tar.new(valid_src, dest).valid_exit?(status, err)
@@ -159,7 +167,7 @@ describe Backupsss::Tar do
         end
 
         it { is_expected.to_not raise_error }
-        it { is_expected.to output(expected_output).to_stderr }
+        it { is_expected.to output(expected_output).to_stdout }
       end
     end
   end

@@ -1,2 +1,4 @@
 AllCops:
+  Exclude:
+    - '*.gemspec'
   TargetRubyVersion: 2.1
